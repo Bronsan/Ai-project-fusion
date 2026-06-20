@@ -5,16 +5,19 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, Settings as SettingsIcon, Key, Shield, Lock, Loader2,
-  CheckCircle2, Sparkles, Info,
+  CheckCircle2, Sparkles, Info, Sun, Moon,
 } from 'lucide-react'
 import { useAuthStore, isWails } from '@/store/useAuthStore'
 import { testApiKey } from '@/lib/api'
 import AuroraBackground from '@/components/AuroraBackground'
 import GlassCard from '@/components/GlassCard'
+import ThemeToggle from '@/components/ThemeToggle'
+import { useThemeStore } from '@/store/useThemeStore'
 
 export default function Settings() {
   const navigate = useNavigate()
   const { username, changePassword, loading, error } = useAuthStore()
+  const { mode, setMode } = useThemeStore()
   const [apiKey, setApiKey] = useState('')
   const [model, setModel] = useState('gpt-4o-mini')
   const [testing, setTesting] = useState(false)
@@ -75,15 +78,53 @@ export default function Settings() {
           <button className="btn-ghost !p-2" onClick={() => navigate('/modules')}>
             <ArrowLeft size={18} />
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <SettingsIcon size={22} /> 设置中心
             </h1>
             <p className="text-xs text-dim mt-1">AI 配置、安全与账户管理</p>
           </div>
+          <ThemeToggle />
         </div>
 
         <div className="space-y-6 max-w-2xl">
+          {/* 主题切换 */}
+          <GlassCard className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              {mode === 'dark' ? <Moon size={18} className="text-aurora-cyan" /> : <Sun size={18} className="text-aurora-purple" />}
+              <h2 className="text-base font-semibold">外观主题</h2>
+            </div>
+            <p className="text-xs text-dim mb-4">
+              切换浅色或深色模式，设置会自动保存。
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setMode('light')}
+                className="p-4 rounded-xl transition-all"
+                style={{
+                  background: mode === 'light' ? 'linear-gradient(135deg, #FFF8E7, #FFE5B4)' : 'var(--color-glass)',
+                  border: mode === 'light' ? '2px solid var(--color-aurora-1)' : '1px solid var(--color-glass-border)',
+                }}
+              >
+                <Sun size={20} className={mode === 'light' ? 'text-amber-500' : 'text-dim'} />
+                <p className="text-sm font-medium mt-2">浅色模式</p>
+                <p className="text-[10px] text-dim">明亮舒适</p>
+              </button>
+              <button
+                onClick={() => setMode('dark')}
+                className="p-4 rounded-xl transition-all"
+                style={{
+                  background: mode === 'dark' ? 'linear-gradient(135deg, #0A0E27, #1a1f3a)' : 'var(--color-glass)',
+                  border: mode === 'dark' ? '2px solid var(--color-aurora-2)' : '1px solid var(--color-glass-border)',
+                }}
+              >
+                <Moon size={20} className={mode === 'dark' ? 'text-aurora-cyan' : 'text-dim'} />
+                <p className="text-sm font-medium mt-2">深色模式</p>
+                <p className="text-[10px] text-dim">深邃护眼</p>
+              </button>
+            </div>
+          </GlassCard>
+
           {/* AI 配置 */}
           <GlassCard className="p-6">
             <div className="flex items-center gap-2 mb-4">

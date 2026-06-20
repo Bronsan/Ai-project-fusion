@@ -14,9 +14,10 @@ import type { Project } from '../types.js'
 const router = Router()
 
 // multer 配置：仅接收单个 zip 文件，存内存
+// 上限 500MB，支持中大型开源项目（如 lodash、clsx、tailwind-merge 等完整仓库）
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB 上限
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB 上限
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === 'application/zip' || file.mimetype === 'application/x-zip-compressed' || file.originalname.toLowerCase().endsWith('.zip')) {
       cb(null, true)

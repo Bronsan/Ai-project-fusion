@@ -10,6 +10,7 @@ import {
 import { useAuthStore, isWails } from '@/store/useAuthStore'
 import AuroraBackground from '@/components/AuroraBackground'
 import GlassCard from '@/components/GlassCard'
+import ThemeToggle from '@/components/ThemeToggle'
 
 // 模块定义
 const MODULES = [
@@ -83,6 +84,7 @@ export default function Modules() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <div className="text-right hidden sm:block">
             <p className="text-xs text-dim">已登录</p>
             <p className="text-sm font-medium">{username}</p>

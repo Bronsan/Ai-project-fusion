@@ -92,7 +92,7 @@ export default function UploadZone() {
                 {dragging ? '松开以上传' : '拖拽 zip 项目包到此处'}
               </p>
               <p className="text-xs text-dim">
-                或点击选择文件 · 支持 .zip 格式 · 最大 50MB
+                或点击选择文件 · 支持 .zip 格式 · 最大 500MB
               </p>
               <div className="flex items-center gap-2 mt-3 text-xs text-dim">
                 <FileArchive size={12} />
