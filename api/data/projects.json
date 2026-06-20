@@ -1,0 +1,148 @@
+{
+  "projects": [
+    {
+      "id": "p1",
+      "name": "AuroraUI",
+      "description": "一套基于 React 的极光风格 UI 组件库，提供玻璃质感、流光动画与暗色主题。",
+      "language": "TypeScript",
+      "tags": ["react", "ui", "glassmorphism", "animation"],
+      "stars": 8420,
+      "license": "MIT",
+      "readme": "# AuroraUI\n极光风格 React 组件库，内置玻璃质感与流光动画。\n\n## 特性\n- 玻璃质感容器\n- 流光按钮\n- 暗色主题优先",
+      "structure": {
+        "framework": "react",
+        "buildTool": "vite",
+        "packageManager": "pnpm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": ["react", "react-dom", "framer-motion", "clsx", "tailwind-merge"]
+    },
+    {
+      "id": "p2",
+      "name": "NexusAPI",
+      "description": "轻量级 Node.js API 网关，支持路由聚合、鉴权中间件与流式响应。",
+      "language": "TypeScript",
+      "tags": ["node", "express", "gateway", "middleware"],
+      "stars": 6230,
+      "license": "MIT",
+      "readme": "# NexusAPI\n轻量级 Node.js API 网关。\n\n## 特性\n- 路由聚合\n- 鉴权中间件\n- 流式响应",
+      "structure": {
+        "framework": "express",
+        "buildTool": "tsc",
+        "packageManager": "npm",
+        "moduleSystem": "esm",
+        "testFramework": "jest"
+      },
+      "dependencies": ["express", "cors", "dotenv", "zod"]
+    },
+    {
+      "id": "p3",
+      "name": "QuantumStore",
+      "description": "基于 Zustand 的状态管理工具集，提供持久化、时间旅行与异步流。",
+      "language": "TypeScript",
+      "tags": ["state", "zustand", "persist", "devtools"],
+      "stars": 4980,
+      "license": "Apache-2.0",
+      "readme": "# QuantumStore\nZustand 状态管理增强工具集。\n\n## 特性\n- 持久化中间件\n- 时间旅行调试\n- 异步流",
+      "structure": {
+        "framework": "react",
+        "buildTool": "vite",
+        "packageManager": "pnpm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": ["zustand", "react", "immer"]
+    },
+    {
+      "id": "p4",
+      "name": "PixelCraft",
+      "description": "Canvas 像素艺术编辑器，支持图层、动画帧与导出 GIF。",
+      "language": "JavaScript",
+      "tags": ["canvas", "pixel-art", "editor", "gif"],
+      "stars": 3150,
+      "license": "MIT",
+      "readme": "# PixelCraft\nCanvas 像素艺术编辑器。\n\n## 特性\n- 图层系统\n- 动画帧\n- GIF 导出",
+      "structure": {
+        "framework": "vanilla",
+        "buildTool": "webpack",
+        "packageManager": "npm",
+        "moduleSystem": "cjs",
+        "testFramework": "mocha"
+      },
+      "dependencies": ["gif.js", "lodash"]
+    },
+    {
+      "id": "p5",
+      "name": "LumenChart",
+      "description": "基于 SVG 的轻量图表库，提供折线、柱状、雷达图与动画过渡。",
+      "language": "TypeScript",
+      "tags": ["svg", "chart", "visualization", "animation"],
+      "stars": 5740,
+      "license": "MIT",
+      "readme": "# LumenChart\nSVG 轻量图表库。\n\n## 特性\n- 折线/柱状/雷达\n- 动画过渡\n- 响应式",
+      "structure": {
+        "framework": "react",
+        "buildTool": "vite",
+        "packageManager": "pnpm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": ["react", "d3-scale", "d3-shape"]
+    },
+    {
+      "id": "p6",
+      "name": "CipherGuard",
+      "description": "前端安全工具集，提供 XSS 过滤、CSP 生成与依赖漏洞扫描。",
+      "language": "TypeScript",
+      "tags": ["security", "xss", "csp", "scanner"],
+      "stars": 4120,
+      "license": "MIT",
+      "readme": "# CipherGuard\n前端安全工具集。\n\n## 特性\n- XSS 过滤\n- CSP 生成\n- 依赖漏洞扫描",
+      "structure": {
+        "framework": "agnostic",
+        "buildTool": "tsc",
+        "packageManager": "npm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": ["dompurify", "semver"]
+    },
+    {
+      "id": "p7",
+      "name": "EchoForm",
+      "description": "React 表单解决方案，支持 schema 驱动、校验与异步提交。",
+      "language": "TypeScript",
+      "tags": ["form", "react", "schema", "validation"],
+      "stars": 3890,
+      "license": "MIT",
+      "readme": "# EchoForm\nReact 表单解决方案。\n\n## 特性\n- Schema 驱动\n- 内置校验\n- 异步提交",
+      "structure": {
+        "framework": "react",
+        "buildTool": "vite",
+        "packageManager": "pnpm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": ["react", "zod", "react-hook-form"]
+    },
+    {
+      "id": "p8",
+      "name": "VortexDB",
+      "description": "嵌入式文档数据库，支持索引、查询与事务，零依赖纯 TypeScript 实现。",
+      "language": "TypeScript",
+      "tags": ["database", "embedded", "document", "typescript"],
+      "stars": 7260,
+      "license": "MIT",
+      "readme": "# VortexDB\n嵌入式文档数据库。\n\n## 特性\n- 索引支持\n- 查询引擎\n- 事务",
+      "structure": {
+        "framework": "agnostic",
+        "buildTool": "tsc",
+        "packageManager": "npm",
+        "moduleSystem": "esm",
+        "testFramework": "vitest"
+      },
+      "dependencies": []
+    }
+  ]
+}
