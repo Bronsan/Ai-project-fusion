@@ -10,7 +10,7 @@ import type {
 import { runThinkingProcess, runVerificationThinking } from './thinkEngine.js'
 import { runSecurityReview } from './securityEngine.js'
 import { runMerge } from './mergeEngine.js'
-import { calculatePreviewScore, SCORE_THRESHOLD } from './scoreEngine.js'
+import { calculatePreviewScore, aiDeepScore, SCORE_THRESHOLD } from './scoreEngine.js'
 import { chat } from './aiClient.js'
 import { saveTask } from './taskRepo.js'
 
@@ -62,13 +62,16 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     log(task, 'reviewing', review.passed ? 'success' : 'error',
       review.passed ? '安全审查通过' : '安全审查未通过，存在阻断级风险')
 
-    // 阶段 3：适配性正式评分
-    updateStatus(task, 'scoring', '适配性评分：计算融合可行性')
+    // 阶段 3：适配性正式评分（AI 读取代码后按规则真实打分）
+    updateStatus(task, 'scoring', '适配性评分：AI 分析代码并按规则打分')
     await delay(500)
 
-    const dimensions = await aiScoreDimensions(projects, task.strategy, ctx)
+    const dimensions = await aiDeepScore(projects, task.strategy, ctx)
     const totalScore = Math.round(
-      dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length
+      dimensions.reduce((sum, d) => {
+        const weight = { '架构兼容性': 0.25, '依赖冲突': 0.2, '许可证兼容': 0.2, '代码风格': 0.2, '文档完整度': 0.15 }[d.name] ?? 0.2
+        return sum + d.score * weight
+      }, 0)
     )
     task.score = totalScore
     log(task, 'scoring', totalScore > SCORE_THRESHOLD ? 'success' : 'warn',
@@ -118,39 +121,6 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     task.status = 'failed'
     task.currentStep = '流程异常'
     log(task, task.status, 'error', `执行失败：${err?.message ?? '未知错误'}`)
-  }
-}
-
-/** AI 深度评分 - 调用大模型生成维度评分 */
-async function aiScoreDimensions(
-  projects: Project[],
-  strategy: string,
-  ctx: FusionContext
-): Promise<ScoreDimension[]> {
-  // 先用规则评分作为基础
-  const base = calculatePreviewScore(projects).dimensions
-
-  const prompt = `你是项目评估专家。请对以下项目融合的适配性进行深度评分，返回 JSON。
-项目：${JSON.stringify(projects.map((p) => ({ name: p.name, framework: p.structure.framework, deps: p.dependencies })))}
-策略：${strategy}
-基础评分参考：${JSON.stringify(base)}
-
-返回格式：{"dimensions":[{"name":"维度名","score":0-100,"comment":"说明"}]}
-维度包括：架构兼容性、依赖冲突、许可证兼容、代码风格、文档完整度
-只返回 JSON。`
-
-  try {
-    const content = await chat(
-      [
-        { role: 'system', content: '你是项目评估专家，擅长评估开源项目的融合可行性。' },
-        { role: 'user', content: prompt },
-      ],
-      { apiKey: ctx.apiKey, model: ctx.model, temperature: 0.3, maxTokens: 600 }
-    )
-    const parsed = JSON.parse(extractJson(content)) as { dimensions: ScoreDimension[] }
-    return parsed.dimensions ?? base
-  } catch {
-    return base
   }
 }
 

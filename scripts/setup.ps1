@@ -126,7 +126,7 @@ function Install-Wails {
 function Main {
     Write-Host ""
     Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║     ProjectFusion v0.10 环境自动配置脚本                 ║" -ForegroundColor Cyan
+    Write-Host "║     ProjectFusion v0.11beta 环境自动配置脚本              ║" -ForegroundColor Cyan
     Write-Host "║     AI 驱动的开源项目智能融合工坊                        ║" -ForegroundColor Cyan
     Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
@@ -251,7 +251,7 @@ function Main {
     Write-Host "║  产物位置：build\bin\ProjectFusion.exe                    ║" -ForegroundColor Green
     Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Green
     Write-Host ""
-    Write-Host "ProjectFusion v0.10 - AI 驱动的开源项目智能融合工坊" -ForegroundColor Cyan
+    Write-Host "ProjectFusion v0.11beta - AI 驱动的开源项目智能融合工坊" -ForegroundColor Cyan
 }
 
 Main

@@ -123,15 +123,10 @@ function simulateResponse(messages: AIChatMessage[], options: AIChatOptions): st
   }
 
   if (last.includes('评分') || last.includes('适配')) {
+    // 不再返回固定分数，由 scoreEngine 的规则评分处理
+    // simulateResponse 仅在 AI 不可达时调用，评分逻辑已在 aiDeepScore 中降级到规则评分
     return JSON.stringify({
-      dimensions: [
-        { name: '架构兼容性', score: 82, comment: '两者均使用 ESM + Vite，架构契合度高' },
-        { name: '依赖冲突', score: 76, comment: 'React 版本一致，少量工具库版本差异' },
-        { name: '许可证兼容', score: 95, comment: '均为 MIT 许可，可自由融合' },
-        { name: '代码风格', score: 80, comment: '均采用 TypeScript + ESLint，风格接近' },
-        { name: '文档完整度', score: 78, comment: 'README 完整，API 文档需补充' },
-      ],
-      totalScore: 82,
+      _note: 'AI 不可达，评分已由规则引擎处理，此响应不会被使用',
     })
   }
 

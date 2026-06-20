@@ -1,0 +1,299 @@
+{
+  "$schema": "scoring-rules.v1",
+  "version": "0.11beta",
+  "description": "ProjectFusion 适配性评分标准规则定义 - AI 读取代码后按此规则打分",
+  "threshold": 75,
+  "dimensions": [
+    {
+      "id": "architecture",
+      "name": "架构兼容性",
+      "nameEn": "Architecture Compatibility",
+      "weight": 0.25,
+      "description": "评估项目间的框架、构建工具、模块系统是否兼容",
+      "rules": [
+        {
+          "id": "framework-match",
+          "name": "框架一致",
+          "condition": "所有项目使用相同框架（如都是 react）",
+          "score": 100,
+          "penalty": 0
+        },
+        {
+          "id": "framework-agnostic",
+          "name": "框架无关",
+          "condition": "至少一方为 agnostic（框架无关）",
+          "score": 90,
+          "penalty": 10
+        },
+        {
+          "id": "framework-diff",
+          "name": "框架不同",
+          "condition": "框架不同且非 agnostic（如 react vs vue）",
+          "score": 50,
+          "penalty": 50
+        },
+        {
+          "id": "framework-vanilla-mixed",
+          "name": "vanilla 混合",
+          "condition": "vanilla 与框架项目混合",
+          "score": 60,
+          "penalty": 40
+        },
+        {
+          "id": "buildtool-match",
+          "name": "构建工具一致",
+          "condition": "构建工具相同（如都是 vite）",
+          "score": 95,
+          "penalty": 5
+        },
+        {
+          "id": "buildtool-diff",
+          "name": "构建工具不同",
+          "condition": "构建工具不同（如 vite vs webpack）",
+          "score": 65,
+          "penalty": 35
+        },
+        {
+          "id": "module-esm-match",
+          "name": "ESM 一致",
+          "condition": "所有项目使用 ESM 模块系统",
+          "score": 100,
+          "penalty": 0
+        },
+        {
+          "id": "module-cjs-esm-mix",
+          "name": "CJS/ESM 混用",
+          "condition": "同时存在 CJS 和 ESM",
+          "score": 40,
+          "penalty": 60
+        },
+        {
+          "id": "import-overlap-high",
+          "name": "共享导入多",
+          "condition": "代码层 import 重叠度 > 50%",
+          "score": 95,
+          "penalty": 0
+        },
+        {
+          "id": "import-overlap-low",
+          "name": "共享导入少",
+          "condition": "代码层 import 重叠度 < 20%",
+          "score": 60,
+          "penalty": 30
+        }
+      ],
+      "scoringMethod": "取所有匹配规则的 score 加权平均，若无匹配则取 70 基础分"
+    },
+    {
+      "id": "dependencies",
+      "name": "依赖冲突",
+      "nameEn": "Dependency Conflict",
+      "weight": 0.20,
+      "description": "评估依赖重叠度与版本冲突风险",
+      "rules": [
+        {
+          "id": "high-overlap",
+          "name": "依赖高度重叠",
+          "condition": "共享依赖 >= 5 个",
+          "score": 95,
+          "penalty": 0
+        },
+        {
+          "id": "medium-overlap",
+          "name": "依赖中度重叠",
+          "condition": "共享依赖 2-4 个",
+          "score": 80,
+          "penalty": 15
+        },
+        {
+          "id": "low-overlap",
+          "name": "依赖少量重叠",
+          "condition": "共享依赖 1 个",
+          "score": 65,
+          "penalty": 30
+        },
+        {
+          "id": "no-overlap",
+          "name": "无共享依赖",
+          "condition": "共享依赖 0 个",
+          "score": 50,
+          "penalty": 40
+        },
+        {
+          "id": "real-import-overlap",
+          "name": "代码层共享导入",
+          "condition": "真实代码 import 有重叠",
+          "score": 85,
+          "penalty": 0
+        },
+        {
+          "id": "version-conflict",
+          "name": "版本冲突",
+          "condition": "同名依赖版本不一致",
+          "score": 40,
+          "penalty": 50
+        }
+      ],
+      "scoringMethod": "取所有匹配规则的 score 加权平均"
+    },
+    {
+      "id": "license",
+      "name": "许可证兼容",
+      "nameEn": "License Compatibility",
+      "weight": 0.20,
+      "description": "评估开源许可证的兼容性",
+      "rules": [
+        {
+          "id": "all-same-permissive",
+          "name": "完全相同宽松许可",
+          "condition": "所有项目许可证相同且为宽松型（MIT/Apache-2.0/BSD/ISC）",
+          "score": 100,
+          "penalty": 0
+        },
+        {
+          "id": "all-permissive-diff",
+          "name": "不同宽松许可",
+          "condition": "均为宽松型但不同（如 MIT + Apache-2.0）",
+          "score": 90,
+          "penalty": 10
+        },
+        {
+          "id": "has-gpl",
+          "name": "含 GPL 系许可",
+          "condition": "任一项目为 GPL/AGPL/LGPL（传染性许可）",
+          "score": 30,
+          "penalty": 70
+        },
+        {
+          "id": "has-unlicensed",
+          "name": "无许可证",
+          "condition": "任一项目缺少许可证或为 UNLICENSED",
+          "score": 20,
+          "penalty": 80
+        },
+        {
+          "id": "has-proprietary",
+          "name": "含专有许可",
+          "condition": "任一项目为专有/商业许可",
+          "score": 10,
+          "penalty": 90
+        }
+      ],
+      "scoringMethod": "取匹配规则的 score"
+    },
+    {
+      "id": "code-style",
+      "name": "代码风格",
+      "nameEn": "Code Style",
+      "weight": 0.20,
+      "description": "评估语言统一性、TypeScript 覆盖率、代码复杂度与测试覆盖",
+      "rules": [
+        {
+          "id": "lang-same-ts",
+          "name": "全 TypeScript",
+          "condition": "所有项目语言相同且为 TypeScript",
+          "score": 100,
+          "penalty": 0
+        },
+        {
+          "id": "lang-same-js",
+          "name": "全 JavaScript",
+          "condition": "所有项目语言相同且为 JavaScript",
+          "score": 75,
+          "penalty": 20
+        },
+        {
+          "id": "lang-mixed",
+          "name": "语言混合",
+          "condition": "项目间语言不同（如 TS + JS）",
+          "score": 55,
+          "penalty": 40
+        },
+        {
+          "id": "complexity-low",
+          "name": "代码简洁",
+          "condition": "平均文件行数 < 100 且导出数 > 0",
+          "score": 95,
+          "penalty": 0
+        },
+        {
+          "id": "complexity-medium",
+          "name": "复杂度中等",
+          "condition": "平均文件行数 100-300",
+          "score": 75,
+          "penalty": 20
+        },
+        {
+          "id": "complexity-high",
+          "name": "代码复杂",
+          "condition": "平均文件行数 > 300 或最大文件 > 500",
+          "score": 50,
+          "penalty": 45
+        },
+        {
+          "id": "has-tests",
+          "name": "有测试覆盖",
+          "condition": "所有项目均含测试文件",
+          "score": 90,
+          "penalty": 0
+        },
+        {
+          "id": "no-exports",
+          "name": "无导出",
+          "condition": "有源码文件但无 export 语句",
+          "score": 40,
+          "penalty": 50
+        }
+      ],
+      "scoringMethod": "取所有匹配规则的 score 加权平均"
+    },
+    {
+      "id": "docs",
+      "name": "文档完整度",
+      "nameEn": "Documentation Completeness",
+      "weight": 0.15,
+      "description": "评估 README 完整度与文档结构",
+      "rules": [
+        {
+          "id": "readme-full",
+          "name": "README 完整",
+          "condition": "所有项目 README > 500 字符",
+          "score": 100,
+          "penalty": 0
+        },
+        {
+          "id": "readme-partial",
+          "name": "README 部分",
+          "condition": "所有项目有 README 但 < 500 字符",
+          "score": 70,
+          "penalty": 25
+        },
+        {
+          "id": "readme-missing",
+          "name": "缺少 README",
+          "condition": "任一项目无 README 或 < 50 字符",
+          "score": 30,
+          "penalty": 65
+        },
+        {
+          "id": "structure-complete",
+          "name": "结构完整",
+          "condition": "源码文件 > 3 且有清晰目录结构",
+          "score": 85,
+          "penalty": 0
+        },
+        {
+          "id": "structure-minimal",
+          "name": "结构简单",
+          "condition": "源码文件 <= 3",
+          "score": 60,
+          "penalty": 30
+        }
+      ],
+      "scoringMethod": "取所有匹配规则的 score 加权平均"
+    }
+  ],
+  "totalScoreFormula": "sum(dimension.score * dimension.weight)",
+  "feasibilityThreshold": 75,
+  "previewThreshold": 60
+}

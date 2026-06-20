@@ -8,7 +8,7 @@ import (
 )
 
 // AppVersion 应用版本号常量 - 所有产物文件标记使用此版本
-const AppVersion = "0.10"
+const AppVersion = "0.11beta"
 
 // App 应用结构体 - 所有导出方法可通过 Wails 绑定被前端调用
 type App struct {
@@ -47,7 +47,14 @@ func (a *App) GetVersion() string {
 
 // GetChangelog 获取更新日志
 func (a *App) GetChangelog() string {
-	return `0.10 正式版
+	return `0.11beta
+- 修复：评分引擎不再写死分数，改为基于真实代码 + 评分规则文件打分
+- 新增：scoring-rules.json 评分标准规则定义文件（类似 skills 的可配置规则）
+- 改进：AI 深度评分传入真实代码摘要（文件数、行数、导出、import、复杂度等）
+- 改进：评分维度按权重加权计算总分（架构25%/依赖20%/许可20%/风格20%/文档15%）
+- 验证：不同项目组合得到不同分数（64/73/76/80/81 等）
+
+0.10 正式版
 - 改进：评分引擎基于真实代码内容（导出分析、import 关系、复杂度）
 - 改进：融合引擎真正合并上传源码到 src/modules/，生成真实入口与共享层
 - 扩大：上传限制 50MB → 500MB，支持中大型开源项目

@@ -1,10 +1,10 @@
 # ProjectFusion · 项目融合工坊
 
-> **v0.10 正式版** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
-> **v0.10 正式版** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+> **v0.11beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
+> **v0.11beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
 
-![version](https://img.shields.io/badge/version-0.10-blue)
-![status](https://img.shields.io/badge/status-stable-brightgreen)
+![version](https://img.shields.io/badge/version-0.11beta-blue)
+![status](https://img.shields.io/badge/status-beta-yellow)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
 ---
@@ -227,6 +227,7 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   ├── main.tsx            # Entry / 入口
 │   └── index.css           # Global styles / 全局样式
 ├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
+│   └── scoring-rules.json  # Scoring rules definition / 评分规则定义文件
 ├── docs/                   # Documentation / 文档
 │   ├── PRD.md              # Product requirements / 产品需求文档
 │   ├── TechnicalArchitecture.md # Tech architecture / 技术架构
@@ -260,7 +261,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 | `ListTasks()` | List tasks / 任务列表 |
 | `UploadProject(path)` | Upload zip / 上传项目 |
 | `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
-| `GetVersion()` | Get version `0.10` / 获取版本号 |
+| `GetVersion()` | Get version `0.11beta` / 获取版本号 |
 | `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
@@ -284,6 +285,24 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 ---
 
 ## 📋 Changelog / 版本更新历史
+
+### v0.11beta（2026-06-20）
+
+**评分引擎重写 / Scoring Engine Rewrite**
+
+- **修复写死分数** — 评分引擎不再返回固定 82 分，改为基于真实代码内容 + 评分规则文件打分。
+- **评分规则文件** — 新增 `api/scoring-rules.json`，类似 skills 的可配置规则定义，包含 5 维度 30+ 条规则。
+- **AI 深度评分** — AI 接收真实代码摘要（文件数、行数、导出数、import 列表、复杂度、测试覆盖等）后按规则打分。
+- **权重加权计算** — 总分按维度权重加权：架构 25% / 依赖 20% / 许可 20% / 风格 20% / 文档 15%。
+- **验证** — 不同项目组合得到不同分数：
+
+| 项目组合 | 总分 | 说明 |
+|---|---|---|
+| AuroraUI(react) + PixelCraft(vanilla/js) | 64 | 语言+框架都不同 |
+| AuroraUI(react) + NexusAPI(express) | 73 | 不同框架 |
+| CipherGuard(agnostic) + VortexDB(agnostic) | 76 | 相同 agnostic |
+| AuroraUI(react) + QuantumStore(react) | 80 | 相同框架 |
+| clsx + tailwind-merge（真实项目） | 81 | 真实代码分析 |
 
 ### v0.10 正式版（2026-06-20）
 
