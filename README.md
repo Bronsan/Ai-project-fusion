@@ -78,6 +78,40 @@ Select ≥2 projects → Preview scoring → Configure strategy & API Key
 
 ## 🚀 Quick Start / 快速开始
 
+### ⚡ One-Click Setup (Recommended) / 一键安装（推荐）
+
+The project includes an automated setup script that detects and installs all dependencies (Go, Node.js, Wails CLI, system libs) with a progress bar.
+
+项目自带自动化安装脚本，会自动检测并安装所有依赖（Go、Node.js、Wails CLI、系统库），带进度条显示。
+
+**Linux / macOS:**
+
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+```
+
+The script performs 7 steps automatically / 脚本自动执行 7 个步骤：
+
+1. Detect & install Go 1.21+ / 检测并安装 Go
+2. Detect & install Node.js 18+ / 检测并安装 Node.js
+3. Verify npm / 验证 npm
+4. Install Wails CLI v2.12.0 / 安装 Wails CLI
+5. Install system dependencies (webkit2gtk, libgtk-3, WebView2) / 安装系统依赖
+6. `npm install` — frontend dependencies / 前端依赖
+7. `go mod download` — Go dependencies / Go 依赖
+
+> If all dependencies are already installed, the script completes in seconds. Missing tools are downloaded and installed automatically.
+> 如果所有依赖已安装，脚本几秒内完成；缺失的工具会自动下载安装。
+
+---
+
 ### Mode A · Desktop Client (Recommended) / 桌面客户端（推荐）
 
 #### Prerequisites / 前置条件
@@ -88,6 +122,9 @@ Select ≥2 projects → Preview scoring → Configure strategy & API Key
 - **System deps** (Linux): `webkit2gtk-4.1`, `libgtk-3-dev`, `pkg-config`
   - macOS: Xcode Command Line Tools
   - Windows: WebView2 runtime (preinstalled on Win10/11)
+
+> 💡 You can skip manual installation by running the one-click setup script above.
+> 💡 运行上方一键安装脚本即可跳过手动安装。
 
 #### Build & Run / 构建与运行
 
