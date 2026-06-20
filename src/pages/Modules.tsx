@@ -80,7 +80,7 @@ export default function Modules() {
           </div>
           <div>
             <h1 className="text-lg font-bold">ProjectFusion</h1>
-            <p className="text-[10px] text-dim">v0.01beta</p>
+            <p className="text-[10px] text-dim">v0.10 正式版</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

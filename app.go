@@ -7,6 +7,9 @@ import (
 	"context"
 )
 
+// AppVersion 应用版本号常量 - 所有产物文件标记使用此版本
+const AppVersion = "0.10"
+
 // App 应用结构体 - 所有导出方法可通过 Wails 绑定被前端调用
 type App struct {
 	ctx context.Context
@@ -39,12 +42,22 @@ func (a *App) shutdown(ctx context.Context) {
 
 // GetVersion 获取应用版本号
 func (a *App) GetVersion() string {
-	return "0.01beta"
+	return AppVersion
 }
 
 // GetChangelog 获取更新日志
 func (a *App) GetChangelog() string {
-	return `0.01beta
+	return `0.10 正式版
+- 改进：评分引擎基于真实代码内容（导出分析、import 关系、复杂度）
+- 改进：融合引擎真正合并上传源码到 src/modules/，生成真实入口与共享层
+- 扩大：上传限制 50MB → 500MB，支持中大型开源项目
+- 新增：浅色/深色模式切换（CSS 变量 + localStorage 持久化）
+- 新增：主题切换按钮（模块中心 + 设置中心头部）
+- 新增：设置中心外观主题卡片（浅色/深色双选）
+- 新增：自动配置环境脚本（带进度条，一键安装）
+- 整理：所有文件结构规范化，产物文件标记版本号
+
+0.01beta
 - 新增：可自行上传项目文件（zip 压缩包）进行融合
 - 新增：用户登录与注册，密码 bcrypt 加密存储
 - 新增：一键登录（记住密码），30 天免登录

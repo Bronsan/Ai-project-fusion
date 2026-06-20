@@ -1,7 +1,11 @@
 # ProjectFusion · 项目融合工坊
 
-> An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
-> 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+> **v0.10 正式版** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
+> **v0.10 正式版** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+
+![version](https://img.shields.io/badge/version-0.10-blue)
+![status](https://img.shields.io/badge/status-stable-brightgreen)
+![license](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -164,6 +168,7 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   │   ├── CountUp.tsx
 │   │   ├── RadarChart.tsx
 │   │   ├── FileTree.tsx
+│   │   ├── ThemeToggle.tsx # Theme switch / 主题切换
 │   │   └── UploadZone.tsx
 │   ├── pages/              # Pages / 页面（模块化独立区块）
 │   │   ├── Login.tsx       # Login/Register / 登录注册
@@ -179,11 +184,20 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   │   └── types.ts        # Frontend types / 前端类型
 │   ├── store/              # State / 状态
 │   │   ├── useAuthStore.ts # Auth state / 认证状态
-│   │   └── useFusionStore.ts
+│   │   ├── useFusionStore.ts
+│   │   └── useThemeStore.ts # Theme state / 主题状态
 │   ├── App.tsx             # Root + router / 根组件与路由
 │   ├── main.tsx            # Entry / 入口
 │   └── index.css           # Global styles / 全局样式
 ├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
+├── docs/                   # Documentation / 文档
+│   ├── PRD.md              # Product requirements / 产品需求文档
+│   ├── TechnicalArchitecture.md # Tech architecture / 技术架构
+│   └── screenshots/        # UI screenshots (versioned) / 界面截图（按版本隔离）
+│       └── v0.10/          # v0.10 screenshots / 0.10 版本截图
+├── scripts/                # Setup scripts / 安装脚本
+│   ├── setup.sh            # Linux/macOS setup / Linux/macOS 安装
+│   └── setup.ps1           # Windows setup / Windows 安装
 └── package.json
 ```
 
@@ -209,7 +223,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 | `ListTasks()` | List tasks / 任务列表 |
 | `UploadProject(path)` | Upload zip / 上传项目 |
 | `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
-| `GetVersion()` | Get version `0.01beta` / 获取版本号 |
+| `GetVersion()` | Get version `0.10` / 获取版本号 |
 | `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
@@ -229,6 +243,40 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 - **数字滚动** — 评分数字以 ease-out-cubic 缓动动画呈现。
 - **流光时间线** — 步骤节点依次点亮，当前节点呼吸放大。
 - **流式日志** — 实时日志条目，按级别着色。
+
+---
+
+## 📋 Changelog / 版本更新历史
+
+### v0.10 正式版（2026-06-20）
+
+**重大改进 / Major Improvements**
+
+- **真实代码评分** — 评分引擎基于真实代码内容（导出分析、import 关系、复杂度），不再仅依赖元数据。
+- **真实代码融合** — 融合引擎真正合并上传源码到 `src/modules/`，生成真实入口与共享层。
+- **上传限制扩大** — 50MB → 500MB，支持中大型开源项目完整仓库。
+- **浅色/深色模式** — CSS 变量 + localStorage 持久化，全站自动适配。
+- **主题切换按钮** — 模块中心 + 设置中心头部，太阳/月亮动画切换。
+- **外观主题卡片** — 设置中心新增浅色/深色双选卡片。
+- **自动配置脚本** — 新增 `setup.sh` / `setup.ps1`，带进度条一键安装环境。
+- **文件结构整理** — 所有文件规范化收纳，产物文件标记版本号。
+
+**验证 / Verification**
+
+- 使用 GitHub 真实项目 `clsx` + `tailwind-merge` 验证融合：
+  - 真实评分 82 分（5 维度详细分析）
+  - 融合产物 120 个文件，保留全部源码
+  - 生成统一入口 `src/index.ts` + 共享层 + 配置层
+
+### v0.01beta（初始版本）
+
+- **桌面客户端** — Go + Wails v2 架构落地，纯 Go 后端无 cgo。
+- **用户认证** — bcrypt 加密 + SQLite 存储。
+- **一键登录** — 30 天记住令牌，免密再次进入。
+- **模块化布局** — 无主页，4 个独立模块（融合/上传/历史/设置）。
+- **文件上传融合** — 可自行上传项目 zip 压缩包进行融合。
+- **内置 AI** — 自带演示用 API Key，支持自定义 Key。
+- **玻璃质感 UI** — 苹果风格设计，极光渐变 + 玻璃卡片 + 3D 倾斜。
 
 ---
 
