@@ -9,6 +9,11 @@
 
 ### English
 
+- **Desktop Client** — Built with Go + Wails v2, ships as a native desktop app (no browser needed).
+- **User Authentication** — Register/login with bcrypt-encrypted password storage in SQLite.
+- **One-Click Login & Remember Password** — 30-day remember token for passwordless re-entry.
+- **Modular Layout** — No main page; each module (fusion, upload, history, settings) is an independent block.
+- **File Upload Fusion** — Upload your own project zip files for fusion, alongside built-in demo projects.
 - **Built-in AI with API Key** — Ships with a built-in API key (demo mode) and supports custom keys for production use.
 - **Multi-Project Fusion** — Select at least 2 open-source projects to fuse into one.
 - **Adaptability Scoring** — 5-dimension scoring (architecture, dependencies, license, code style, docs) with a 75-point threshold.
@@ -20,6 +25,11 @@
 
 ### 中文
 
+- **桌面客户端** — 基于 Go + Wails v2 构建，原生桌面应用，无需浏览器。
+- **用户认证** — 注册/登录，密码采用 bcrypt 加密后存入 SQLite。
+- **一键登录与记住密码** — 30 天记住令牌，免密再次进入。
+- **模块化布局** — 无主页，每个模块（融合、上传、历史、设置）均为独立区块。
+- **文件上传融合** — 可自行上传项目 zip 压缩包进行融合，内置项目保留用于演示。
 - **内置 AI 与 API Key** — 自带演示用 API Key，同时支持用户自定义 Key 接入生产模型。
 - **多项目融合** — 最少选择两个开源项目，融合为一个新项目。
 - **适配性评分** — 五维度评分（架构兼容性、依赖冲突、许可证、代码风格、文档完整度），75 分为融合阈值。
@@ -51,42 +61,58 @@ Select ≥2 projects → Preview scoring → Configure strategy & API Key
 
 | Layer / 层 | Technology / 技术 |
 |---|---|
+| Desktop Framework / 桌面框架 | Wails v2 (Go + Webview) |
+| Backend / 后端 | Go 1.25 (pure Go, no cgo) |
+| Auth / 认证 | bcrypt + SQLite (modernc.org/sqlite) |
 | Frontend / 前端 | React 18 + TypeScript + Vite + Tailwind CSS 3 |
 | State / 状态管理 | Zustand |
 | Animation / 动画 | Framer Motion + CSS Keyframes |
 | Icons / 图标 | lucide-react |
-| Backend / 后端 | Express 4 + TypeScript (ESM) |
-| Storage / 存储 | In-memory + JSON file persistence |
 | AI / 大模型 | OpenAI-compatible API (built-in key + custom key) |
 
 ---
 
 ## 🚀 Quick Start / 快速开始
 
-### Prerequisites / 前置条件
+### Mode A · Desktop Client (Recommended) / 桌面客户端（推荐）
 
-- Node.js >= 18
-- npm (or pnpm)
+#### Prerequisites / 前置条件
 
-### Install & Run / 安装与运行
+- **Go** >= 1.21
+- **Node.js** >= 18
+- **Wails CLI** v2: `go install github.com/wailsapp/wails/v2/cmd/wails@v2.12.0`
+- **System deps** (Linux): `webkit2gtk-4.1`, `libgtk-3-dev`, `pkg-config`
+  - macOS: Xcode Command Line Tools
+  - Windows: WebView2 runtime (preinstalled on Win10/11)
+
+#### Build & Run / 构建与运行
 
 ```bash
-# Install dependencies / 安装依赖
+# Install frontend deps / 安装前端依赖
 npm install
 
-# Start dev server (frontend + backend) / 启动开发服务器（前端 + 后端）
-npm run dev
+# Development mode (hot reload) / 开发模式（热重载）
+wails dev
+
+# Production build → bin/ProjectFusion / 生产构建
+wails build
+
+# The binary is in build/bin/ / 产物位于 build/bin/
 ```
 
-- Frontend / 前端: http://localhost:5173
-- Backend / 后端: http://localhost:3001
-
-### Build / 构建
+### Mode B · Web Mode (Fallback) / Web 模式（降级）
 
 ```bash
-npm run build      # Type check + production build / 类型检查 + 生产构建
-npm run check      # TypeScript type check only / 仅类型检查
+npm install
+npm run dev          # Frontend on :5173 / 前端 :5173
+npm run server       # Backend on :3001 / 后端 :3001
 ```
+
+- Frontend / 前端: http://127.0.0.1:5173
+- Backend / 后端: http://127.0.0.1:3001
+
+> Web mode uses mock auth (username ≥ 2 chars, password ≥ 6 chars). Desktop mode uses real bcrypt + SQLite.
+> Web 模式使用模拟认证（用户名 ≥2 字符，密码 ≥6 字符），桌面模式使用真实 bcrypt + SQLite。
 
 ---
 
@@ -116,26 +142,20 @@ Users can also input a custom API key on the **Configure** page, which overrides
 
 ```
 .
-├── api/                    # Backend / 后端
-│   ├── data/               # JSON data store / JSON 数据存储
-│   │   ├── projects.json   # Project library / 项目库
-│   │   └── tasks.json      # Fusion task records / 融合任务记录
-│   ├── lib/                # Core engines / 核心引擎
-│   │   ├── aiClient.ts     # AI client / AI 客户端
-│   │   ├── thinkEngine.ts  # Thinking process / 思考流程引擎
-│   │   ├── securityEngine.ts # Security review / 安全审查引擎
-│   │   ├── scoreEngine.ts  # Scoring / 评分引擎
-│   │   ├── mergeEngine.ts  # Code merging / 拼接引擎
-│   │   ├── fusionService.ts # Orchestration / 流程编排
-│   │   └── taskRepo.ts     # Task repository / 任务仓库
-│   ├── routes/             # API routes / API 路由
-│   │   ├── projects.ts
-│   │   ├── score.ts
-│   │   ├── fusion.ts
-│   │   └── ai.ts
-│   ├── types.ts            # Shared types / 共享类型
-│   ├── app.ts              # Express app / Express 应用
-│   └── server.ts           # Server entry / 服务器入口
+├── main.go                 # Wails entry / Wails 入口
+├── app.go                  # App struct & bindings / 应用绑定
+├── auth.go                 # Auth (bcrypt + token) / 认证模块
+├── db.go                   # SQLite storage / 数据库
+├── aiclient.go             # AI client / AI 客户端
+├── thinkengine.go          # Thinking process / 思考流程引擎
+├── securityengine.go       # Security review / 安全审查引擎
+├── scoreengine.go          # Scoring / 评分引擎
+├── mergeengine.go          # Code merging / 拼接引擎
+├── fusionservice.go        # Orchestration / 流程编排
+├── projects.go             # Project library / 项目库
+├── types.go                # Shared types / 共享类型
+├── wails.json              # Wails config / Wails 配置
+├── go.mod / go.sum         # Go deps / Go 依赖
 ├── src/                    # Frontend / 前端
 │   ├── components/         # Reusable components / 通用组件
 │   │   ├── AuroraBackground.tsx
@@ -143,40 +163,54 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   │   ├── Navbar.tsx
 │   │   ├── CountUp.tsx
 │   │   ├── RadarChart.tsx
-│   │   └── FileTree.tsx
-│   ├── pages/              # Pages / 页面
-│   │   ├── Home.tsx        # Workspace / 工作台
+│   │   ├── FileTree.tsx
+│   │   └── UploadZone.tsx
+│   ├── pages/              # Pages / 页面（模块化独立区块）
+│   │   ├── Login.tsx       # Login/Register / 登录注册
+│   │   ├── Modules.tsx     # Module center / 模块中心
 │   │   ├── Select.tsx      # Project selection / 项目选择
 │   │   ├── Configure.tsx   # Fusion config / 融合配置
 │   │   ├── Execute.tsx     # Execution / 融合执行
-│   │   └── Report.tsx      # Report / 融合报告
+│   │   ├── Report.tsx      # Report / 融合报告
+│   │   ├── History.tsx     # History / 历史记录
+│   │   └── Settings.tsx    # Settings / 设置中心
 │   ├── lib/                # Utils / 工具
-│   │   ├── api.ts          # API wrapper / API 封装
+│   │   ├── api.ts          # Dual-mode API (Wails/Web) / 双模式 API
 │   │   └── types.ts        # Frontend types / 前端类型
 │   ├── store/              # State / 状态
+│   │   ├── useAuthStore.ts # Auth state / 认证状态
 │   │   └── useFusionStore.ts
-│   ├── App.tsx             # Root component / 根组件
+│   ├── App.tsx             # Root + router / 根组件与路由
 │   ├── main.tsx            # Entry / 入口
 │   └── index.css           # Global styles / 全局样式
+├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
 └── package.json
 ```
 
 ---
 
-## 📡 API Reference / API 参考
+## 🔌 Wails Bindings / Wails 绑定接口
 
-| Method | Endpoint | Description / 说明 |
-|---|---|---|
-| GET | `/api/projects` | List project library / 获取项目库 |
-| GET | `/api/projects/:id` | Get project detail / 获取项目详情 |
-| POST | `/api/score/preview` | Preview adaptability score / 预评分 |
-| POST | `/api/fusion` | Create fusion task / 创建融合任务 |
-| GET | `/api/fusion` | List tasks / 任务列表 |
-| GET | `/api/fusion/:taskId` | Get task status & logs / 获取任务状态与日志 |
-| GET | `/api/fusion/:taskId/artifacts` | Get artifact file tree / 获取产物文件树 |
-| GET | `/api/fusion/:taskId/download` | Download all artifacts / 下载整包 |
-| POST | `/api/ai/test` | Test API key / 测试 API Key |
-| GET | `/api/health` | Health check / 健康检查 |
+Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
+
+桌面模式通过 `window.go.main.App.*` 将 Go 方法暴露给前端：
+
+| Method / 方法 | Description / 说明 |
+|---|---|
+| `RegisterUser(username, password)` | Register / 注册 |
+| `Login(username, password, remember)` | Login / 登录 |
+| `LoginWithToken(token)` | One-click login / 一键登录 |
+| `Logout(username)` | Logout / 注销 |
+| `ChangePassword(username, oldPwd, newPwd)` | Change password / 修改密码 |
+| `GetProjects()` | List project library / 获取项目库 |
+| `PreviewScoreAPI(ids)` | Preview score / 预评分 |
+| `StartFusion(req)` | Create fusion task / 创建融合任务 |
+| `GetTask(id)` | Get task status / 获取任务状态 |
+| `ListTasks()` | List tasks / 任务列表 |
+| `UploadProject(path)` | Upload zip / 上传项目 |
+| `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
+| `GetVersion()` | Get version `0.01beta` / 获取版本号 |
+| `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
 

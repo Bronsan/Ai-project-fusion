@@ -31,3 +31,21 @@ dist-ssr
 
 # 运行时数据 / Runtime data
 api/data/tasks.json
+
+# Go 构建产物 / Go build artifacts
+/bin/
+/build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Wails 生成 / Wails generated
+src/wailsjs/
+
+# 数据库文件 / Database files
+*.db
+*.db-journal

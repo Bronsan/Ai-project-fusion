@@ -1,5 +1,7 @@
 // 前端类型定义 - 与后端 types.ts 对应
 
+export type ProjectSource = 'builtin' | 'uploaded';
+
 export interface Project {
   id: string;
   name: string;
@@ -9,6 +11,7 @@ export interface Project {
   stars: number;
   license: string;
   readme: string;
+  source: ProjectSource;
   structure: {
     framework: string;
     buildTool: string;
@@ -17,6 +20,7 @@ export interface Project {
     testFramework: string;
   };
   dependencies: string[];
+  files?: { path: string; content: string }[];
 }
 
 export interface ScoreDimension {

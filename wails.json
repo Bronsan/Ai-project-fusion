@@ -1,0 +1,18 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "ProjectFusion",
+  "outputfilename": "ProjectFusion",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "frontend:dir": ".",
+  "wailsjsdir": "./src",
+  "version": "0.01beta",
+  "info": {
+    "productName": "ProjectFusion",
+    "productVersion": "0.01beta",
+    "companyName": "ProjectFusion",
+    "comments": "AI 驱动的开源项目智能融合工坊"
+  }
+}

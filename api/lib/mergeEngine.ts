@@ -19,9 +19,31 @@ export async function runMerge(
   // 2. 规则生成基础文件
   const ruleFiles = generateRuleFiles(projects, plan)
 
-  // 3. 合并并构建文件树
-  const allFiles = [...ruleFiles, ...aiFiles]
+  // 3. 引入上传项目的原始文件（放入 src/modules/<项目名>/ 下）
+  const uploadedFiles = collectUploadedFiles(projects)
+
+  // 4. 合并并构建文件树
+  const allFiles = [...ruleFiles, ...aiFiles, ...uploadedFiles]
   return buildFileTree(allFiles)
+}
+
+/** 收集上传项目的原始文件，按项目名归档到 src/modules/ 下 */
+function collectUploadedFiles(projects: Project[]): { path: string; content: string }[] {
+  const result: { path: string; content: string }[] = []
+  for (const p of projects) {
+    if (p.source !== 'uploaded' || !p.files || p.files.length === 0) continue
+    const safeName = p.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase() || 'module'
+    for (const f of p.files) {
+      // 跳过过大的文件与配置文件（避免与根配置冲突）
+      if (f.content.length > 50000) continue
+      if (f.path === 'package.json' || f.path === 'README.md') continue
+      result.push({
+        path: `src/modules/${safeName}/${f.path}`,
+        content: f.content,
+      })
+    }
+  }
+  return result
 }
 
 /** AI 生成核心文件 */

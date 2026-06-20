@@ -1,5 +1,8 @@
 // 通用类型定义 - 项目融合工坊
 
+/** 项目来源 */
+export type ProjectSource = 'builtin' | 'uploaded';
+
 /** 开源项目 */
 export interface Project {
   id: string;
@@ -10,6 +13,8 @@ export interface Project {
   stars: number;
   license: string;
   readme: string;
+  // 项目来源：内置演示或用户上传
+  source: ProjectSource;
   // 项目结构特征，用于评分
   structure: {
     framework: string;       // 主框架
@@ -20,6 +25,8 @@ export interface Project {
   };
   // 依赖列表
   dependencies: string[];
+  // 上传项目的原始文件（路径 -> 内容），用于融合时引用
+  files?: { path: string; content: string }[];
 }
 
 /** 评分维度 */

@@ -14,6 +14,10 @@ interface FusionState {
   projects: Project[]
   projectsLoading: boolean
   loadProjects: () => Promise<void>
+  uploadProject: (file: File) => Promise<Project | null>
+  deleteUploadedProject: (id: string) => Promise<void>
+  uploading: boolean
+  uploadError: string | null
 
   // 已选项目
   selectedIds: string[]
@@ -39,6 +43,8 @@ interface FusionState {
   tasks: FusionTask[]
   loadTasks: () => Promise<void>
   currentTask: FusionTask | null
+  currentTaskId: string | null
+  setTaskId: (id: string) => void
   startFusion: () => Promise<string | null>
   refreshCurrentTask: () => Promise<void>
 
@@ -52,6 +58,8 @@ export const useFusionStore = create<FusionState>((set, get) => ({
   // ===== 项目库 =====
   projects: [],
   projectsLoading: false,
+  uploading: false,
+  uploadError: null,
   loadProjects: async () => {
     set({ projectsLoading: true })
     try {
@@ -59,6 +67,34 @@ export const useFusionStore = create<FusionState>((set, get) => ({
       set({ projects, projectsLoading: false })
     } catch {
       set({ projectsLoading: false })
+    }
+  },
+  uploadProject: async (file: File) => {
+    set({ uploading: true, uploadError: null })
+    try {
+      const project = await api.uploadProject(file)
+      // 上传成功后刷新项目列表
+      const projects = await api.fetchProjects()
+      set({ projects, uploading: false })
+      return project
+    } catch (err: any) {
+      set({ uploading: false, uploadError: err?.message ?? '上传失败' })
+      return null
+    }
+  },
+  deleteUploadedProject: async (id: string) => {
+    try {
+      await api.deleteUploadedProject(id)
+      // 从已选中移除
+      const { selectedIds } = get()
+      if (selectedIds.includes(id)) {
+        set({ selectedIds: selectedIds.filter((x) => x !== id), preview: null })
+      }
+      // 刷新列表
+      const projects = await api.fetchProjects()
+      set({ projects })
+    } catch {
+      // 忽略
     }
   },
 
@@ -113,6 +149,10 @@ export const useFusionStore = create<FusionState>((set, get) => ({
     }
   },
   currentTask: null,
+  currentTaskId: null,
+  setTaskId: (id: string) => {
+    set({ currentTaskId: id, currentTask: null })
+  },
   startFusion: async () => {
     const { selectedIds, strategy, securityLevel, apiKey, model } = get()
     if (selectedIds.length < 2) return null
@@ -124,17 +164,19 @@ export const useFusionStore = create<FusionState>((set, get) => ({
         apiKey: apiKey || undefined,
         model,
       })
+      set({ currentTaskId: taskId })
       return taskId
     } catch {
       return null
     }
   },
   refreshCurrentTask: async () => {
-    const { currentTask } = get()
-    if (!currentTask) return
+    const { currentTask, currentTaskId } = get()
+    const id = currentTask?.id || currentTaskId
+    if (!id) return
     try {
-      const task = await api.fetchTask(currentTask.id)
-      set({ currentTask: task })
+      const task = await api.fetchTask(id)
+      set({ currentTask: task, currentTaskId: id })
     } catch {
       // 忽略
     }
