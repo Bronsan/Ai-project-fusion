@@ -314,12 +314,6 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 - **融合执行取消功能** — 全程支持 AbortController 取消，新增 `POST /api/fusion/:taskId/cancel` 接口，前端执行页新增「取消任务」按钮。
 - **报告页对比视图** — 新增「查看对比」按钮，展示融合前后各项目维度对比表（语言/框架/构建工具/模块系统/许可证/依赖数/文件数 + 5 维度评分对比）。
 
-**测试截图 / Test Screenshot**
-
-![v0.12beta 评分引擎单元测试](docs/screenshots/v0.12/01-test-results.png)
-
-> 10 个测试用例全部通过，验证评分引擎不再写死分数。
-
 **新增文件 / New Files**
 
 - `api/lib/uploadSecurity.ts` — 上传安全防护引擎
