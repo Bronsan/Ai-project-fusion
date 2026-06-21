@@ -228,30 +228,38 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   └── index.css           # Global styles / 全局样式
 ├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
 │   ├── lib/
-│   │   ├── aiClient.ts        # AI client (timeout/retry/stream) / AI 客户端（超时/重试/流式）
-│   │   ├── fusionService.ts   # Fusion orchestration (cancellable) / 融合编排（可取消）
-│   │   ├── mergeEngine.ts     # Real code fusion engine / 真代码融合引擎
-│   │   ├── scoreEngine.ts     # Scoring engine / 评分引擎
-│   │   ├── securityEngine.ts  # Security review / 安全审查
-│   │   ├── thinkEngine.ts     # Thinking process / 思考流程
-│   │   ├── taskRepo.ts        # Task repository / 任务仓库
-│   │   └── uploadSecurity.ts  # Upload security guard / 上传安全防护
+│   │   ├── aiClient.ts             # AI client (timeout/retry/stream) / AI 客户端（超时/重试/流式）
+│   │   ├── astParser.ts            # AST entity extractor / AST 实体提取器
+│   │   ├── entityMerger.ts         # Intra-entity 3-way merge / 实体级三方合并
+│   │   ├── fusionService.ts        # Fusion orchestration (cancellable) / 融合编排（可取消）
+│   │   ├── mergeEngine.ts          # AST semantic fusion engine / AST 语义级融合引擎
+│   │   ├── productSecurityScanner.ts # Product security scanner / 产物安全扫描
+│   │   ├── scoreEngine.ts          # Scoring engine / 评分引擎
+│   │   ├── securityEngine.ts       # Security review / 安全审查
+│   │   ├── thinkEngine.ts          # Thinking process / 思考流程
+│   │   ├── taskRepo.ts             # Task repository / 任务仓库
+│   │   └── uploadSecurity.ts       # Upload security guard / 上传安全防护
 │   ├── routes/
 │   │   ├── ai.ts              # AI routes / AI 路由
 │   │   ├── fusion.ts          # Fusion routes (with cancel) / 融合路由（含取消）
 │   │   ├── projects.ts        # Project upload routes / 项目上传路由
 │   │   └── score.ts           # Score routes / 评分路由
 │   ├── tests/
-│   │   └── scoreEngine.test.ts # Scoring unit tests / 评分单元测试
+│   │   ├── astParser.test.ts          # AST parser tests / AST 解析测试
+│   │   ├── productSecurityScanner.test.ts # Product scan tests / 产物扫描测试
+│   │   └── scoreEngine.test.ts        # Scoring unit tests / 评分单元测试
 │   └── scoring-rules.json     # Scoring rules definition / 评分规则定义文件
 ├── docs/                   # Documentation / 文档
 │   ├── PRD.md              # Product requirements / 产品需求文档
 │   ├── TechnicalArchitecture.md # Tech architecture / 技术架构
 │   └── screenshots/        # UI screenshots (versioned) / 界面截图（按版本隔离）
-│       └── v0.10/          # v0.10 screenshots / 0.10 版本截图
-├── scripts/                # Setup scripts / 安装脚本
+│       ├── v0.13/          # Current version screenshots / 当前版本截图
+│       └── archive/        # Previous version archive / 旧版本归档
+│           └── v0.10/      # v0.10 screenshots / 0.10 版本截图
+├── scripts/                # Setup & utility scripts / 安装与工具脚本
 │   ├── setup.sh            # Linux/macOS setup / Linux/macOS 安装
-│   └── setup.ps1           # Windows setup / Windows 安装
+│   ├── setup.ps1           # Windows setup / Windows 安装
+│   └── screenshot.cjs      # Screenshot generator / 截图脚本
 └── package.json
 ```
 
@@ -312,11 +320,25 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 - **改进：实体级冲突检测** — 同名不同种类不再误判，如 class Foo vs function Foo。
 - **改进：去重基于 AST 实体 body 哈希** — 更精准。
 
-**测试截图 / Test Screenshot**
+**界面截图 / UI Screenshots**
 
-![v0.13beta P0 测试结果](docs/screenshots/v0.13/01-test-results.png)
+| 登录页 | 模块中心 |
+|:---:|:---:|
+| ![登录页](docs/screenshots/v0.13/01-login.png) | ![模块中心](docs/screenshots/v0.13/02-modules.png) |
 
-> 33 个测试全部通过：AST 解析 13 + 产物安全扫描 10 + 评分引擎 10。
+| 选择项目 | 融合配置 |
+|:---:|:---:|
+| ![选择项目](docs/screenshots/v0.13/03-select.png) | ![融合配置](docs/screenshots/v0.13/04-configure.png) |
+
+| 融合历史 | 设置页 |
+|:---:|:---:|
+| ![融合历史](docs/screenshots/v0.13/05-history.png) | ![设置页](docs/screenshots/v0.13/06-settings.png) |
+
+| 报告页 | 浅色主题 |
+|:---:|:---:|
+| ![报告页](docs/screenshots/v0.13/07-report.png) | ![浅色主题](docs/screenshots/v0.13/08-light-mode.png) |
+
+> 截图由 Puppeteer + chrome-headless-shell 对运行中的 Web 应用真实截取，非生成图。
 
 ### v0.12beta（2026-06-21）
 
