@@ -381,7 +381,3 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 - **玻璃质感 UI** — 苹果风格设计，极光渐变 + 玻璃卡片 + 3D 倾斜。
 
 ---
-
-## 📄 License / 许可证
-
-MIT
