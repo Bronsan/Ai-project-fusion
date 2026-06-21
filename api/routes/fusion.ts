@@ -9,7 +9,7 @@ import {
   loadTasks,
   generateTaskId,
 } from '../lib/taskRepo.js'
-import { executeFusion } from '../lib/fusionService.js'
+import { executeFusion, cancelFusionTask } from '../lib/fusionService.js'
 import { calculatePreviewScore } from '../lib/scoreEngine.js'
 
 const router = Router()
@@ -85,6 +85,25 @@ router.get('/:taskId', async (req, res) => {
     return
   }
   res.json({ success: true, data: task })
+})
+
+/** 取消正在执行的任务 */
+router.post('/:taskId/cancel', async (req, res) => {
+  const task = await getTask(req.params.taskId)
+  if (!task) {
+    res.status(404).json({ success: false, error: '任务不存在' })
+    return
+  }
+  if (task.status === 'done' || task.status === 'failed') {
+    res.status(400).json({ success: false, error: `任务已结束（${task.status}），无法取消` })
+    return
+  }
+  const ok = cancelFusionTask(task.id)
+  if (!ok) {
+    res.status(400).json({ success: false, error: '任务控制器不存在（可能已完成或服务已重启）' })
+    return
+  }
+  res.json({ success: true, data: { cancelled: true } })
 })
 
 /** 获取融合产物文件树 */

@@ -8,7 +8,7 @@ import (
 )
 
 // AppVersion 应用版本号常量 - 所有产物文件标记使用此版本
-const AppVersion = "0.11beta"
+const AppVersion = "0.12beta"
 
 // App 应用结构体 - 所有导出方法可通过 Wails 绑定被前端调用
 type App struct {
@@ -47,7 +47,16 @@ func (a *App) GetVersion() string {
 
 // GetChangelog 获取更新日志
 func (a *App) GetChangelog() string {
-	return `0.11beta
+	return `0.12beta
+- 新增：融合引擎升级为真代码融合（同名导出冲突检测与重命名、依赖版本冲突解决、代码级去重）
+- 新增：AI 调用降级策略（超时控制、指数退避重试、流式输出支持）
+- 新增：评分引擎单元测试（vitest，10+ 测试用例验证评分不写死）
+- 新增：上传安全防护（zip 炸弹检测、路径穿越拦截、文件类型白名单）
+- 新增：网页端上传限制 50MB，流量异常自动封号 1 小时（速率+流量双限）
+- 新增：融合执行取消功能（AbortController，全程可取消）
+- 新增：报告页对比视图（融合前后各项目维度对比表）
+
+0.11beta
 - 修复：评分引擎不再写死分数，改为基于真实代码 + 评分规则文件打分
 - 新增：scoring-rules.json 评分标准规则定义文件（类似 skills 的可配置规则）
 - 改进：AI 深度评分传入真实代码摘要（文件数、行数、导出、import、复杂度等）

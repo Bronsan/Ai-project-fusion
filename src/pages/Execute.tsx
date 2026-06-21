@@ -1,14 +1,15 @@
 // 融合执行页 - 思考流程可视化、安全审查、日志流
+// v0.12beta: 新增取消任务功能
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Cpu, Shield, GitFork, CheckCircle2, AlertCircle, Loader2,
-  ArrowRight, Activity,
+  ArrowRight, Activity, XCircle,
 } from 'lucide-react'
 import GlassCard from '@/components/GlassCard'
-import { fetchTask } from '@/lib/api'
+import { fetchTask, cancelFusionTask } from '@/lib/api'
 import type { FusionTask, FusionStatus } from '@/lib/types'
 
 // 流程步骤定义
@@ -28,7 +29,21 @@ export default function Execute() {
   const navigate = useNavigate()
   const [task, setTask] = useState<FusionTask | null>(null)
   const [loading, setLoading] = useState(true)
+  const [cancelling, setCancelling] = useState(false)
   const logEndRef = useRef<HTMLDivElement>(null)
+
+  // 取消任务
+  const handleCancel = async () => {
+    if (!taskId || cancelling) return
+    setCancelling(true)
+    try {
+      await cancelFusionTask(taskId)
+    } catch {
+      // 忽略错误，轮询会自动更新状态
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   // 轮询任务状态
   useEffect(() => {
@@ -76,9 +91,26 @@ export default function Execute() {
   return (
     <div className="page-enter container-narrow py-10">
       {/* 顶部 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-1">融合执行中</h1>
-        <p className="text-sm text-dim">{task.currentStep}</p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-1">融合执行中</h1>
+          <p className="text-sm text-dim">{task.currentStep}</p>
+        </div>
+        {/* 取消按钮 - 任务进行中时显示 */}
+        {task.status !== 'done' && task.status !== 'failed' && (
+          <button
+            className="btn-ghost text-sm"
+            onClick={handleCancel}
+            disabled={cancelling}
+            style={{ color: 'var(--color-aurora-pink)' }}
+          >
+            {cancelling ? (
+              <><Loader2 size={14} className="animate-spin" /> 取消中...</>
+            ) : (
+              <><XCircle size={14} /> 取消任务</>
+            )}
+          </button>
+        )}
       </div>
 
       {/* 流程步骤时间线 */}

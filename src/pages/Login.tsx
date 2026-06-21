@@ -104,7 +104,7 @@ export default function Login() {
               <Sparkles size={28} className="text-white" />
             </motion.div>
             <h1 className="text-2xl font-bold">ProjectFusion</h1>
-            <p className="text-xs text-dim mt-1">AI 驱动的开源项目智能融合工坊 · 0.11beta</p>
+            <p className="text-xs text-dim mt-1">AI 驱动的开源项目智能融合工坊 · 0.12beta</p>
           </div>
 
           {/* 模式切换 */}

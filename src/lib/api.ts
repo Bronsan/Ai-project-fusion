@@ -49,6 +49,11 @@ export async function uploadProject(file: File): Promise<Project> {
     // 这里使用 runtime 的文件选择，由调用方传入路径
     throw new Error('桌面模式请使用 uploadProjectByPath')
   }
+  // 网页端 50MB 限制（与后端一致）
+  const WEB_UPLOAD_LIMIT = 50 * 1024 * 1024
+  if (file.size > WEB_UPLOAD_LIMIT) {
+    throw new Error(`文件过大：${(file.size / 1024 / 1024).toFixed(1)}MB，网页端上限 50MB（桌面端可上传 500MB）`)
+  }
   const formData = new FormData()
   formData.append('file', file)
   const res = await fetch('/api/projects/upload', {
@@ -120,6 +125,20 @@ export async function fetchTask(taskId: string): Promise<FusionTask> {
     return await window.go.main.App.GetTask(taskId)
   }
   return request<FusionTask>(`/api/fusion/${taskId}`)
+}
+
+/** 取消正在执行的融合任务 */
+export async function cancelFusionTask(taskId: string): Promise<{ cancelled: boolean }> {
+  if (isWails) {
+    // 桌面模式：调用 Go 端取消方法（如果存在）
+    if (window.go.main.App.CancelFusion) {
+      return await window.go.main.App.CancelFusion(taskId)
+    }
+    throw new Error('桌面模式暂不支持取消')
+  }
+  return request<{ cancelled: boolean }>(`/api/fusion/${taskId}/cancel`, {
+    method: 'POST',
+  })
 }
 
 /** 获取任务列表 */

@@ -27,6 +27,7 @@ declare global {
           StartFusion: (ids: string[], strategy: string, level: number, apiKey: string, model: string) => Promise<any>
           GetTask: (id: string) => Promise<any>
           ListTasks: () => Promise<any[]>
+          CancelFusion: (taskId: string) => Promise<{ cancelled: boolean }>
         }
       }
     }

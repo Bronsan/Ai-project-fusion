@@ -12,9 +12,36 @@ import (
 
 // 任务存储（内存）
 var (
-	tasksMu sync.RWMutex
-	tasks   = map[string]*FusionTask{}
+	tasksMu          sync.RWMutex
+	tasks            = map[string]*FusionTask{}
+	cancelledTasksMu sync.RWMutex
+	cancelledTasks   = map[string]bool{}
 )
+
+// CancelFusion 取消融合任务
+func (a *App) CancelFusion(taskID string) map[string]bool {
+	cancelledTasksMu.Lock()
+	cancelledTasks[taskID] = true
+	cancelledTasksMu.Unlock()
+	return map[string]bool{"cancelled": true}
+}
+
+// isTaskCancelled 检查任务是否已取消
+func isTaskCancelled(taskID string) bool {
+	cancelledTasksMu.RLock()
+	defer cancelledTasksMu.RUnlock()
+	return cancelledTasks[taskID]
+}
+
+// throwIfCancelled 若任务已取消则记录日志并返回 true
+func (a *App) throwIfCancelled(task *FusionTask) bool {
+	if isTaskCancelled(task.ID) {
+		a.updateTaskStatus(task, StatusCancelled, "任务已取消")
+		a.logTask(task, string(StatusCancelled), "warn", "用户取消任务，流程终止")
+		return true
+	}
+	return false
+}
 
 // StartFusion 启动融合任务 - 异步执行完整流程
 func (a *App) StartFusion(projectIDs []string, strategy string, securityLevel int, apiKey, model string) (*FusionTask, error) {
@@ -68,6 +95,9 @@ func (a *App) executeFusion(task *FusionTask, projects []Project, apiKey, model 
 
 	// 阶段 1：思考流程
 	a.updateTaskStatus(task, StatusThinking, "AI 思考流程：分析项目结构")
+	if a.throwIfCancelled(task) {
+		return
+	}
 	var names []string
 	for _, p := range projects {
 		names = append(names, p.Name)
@@ -83,6 +113,9 @@ func (a *App) executeFusion(task *FusionTask, projects []Project, apiKey, model 
 	a.logTask(task, "thinking", "success", thinking.Summary)
 
 	// 阶段 2：安全审查
+	if a.throwIfCancelled(task) {
+		return
+	}
 	a.updateTaskStatus(task, StatusReviewing, "安全审查：扫描代码与依赖")
 	a.logTask(task, "reviewing", "info", "启动安全审查引擎")
 	time.Sleep(600 * time.Millisecond)
@@ -109,6 +142,9 @@ func (a *App) executeFusion(task *FusionTask, projects []Project, apiKey, model 
 	}
 
 	// 阶段 3：适配性评分
+	if a.throwIfCancelled(task) {
+		return
+	}
 	a.updateTaskStatus(task, StatusScoring, "适配性评分：计算融合可行性")
 	time.Sleep(500 * time.Millisecond)
 
@@ -136,6 +172,9 @@ func (a *App) executeFusion(task *FusionTask, projects []Project, apiKey, model 
 	}
 
 	// 阶段 5：代码拼接
+	if a.throwIfCancelled(task) {
+		return
+	}
 	a.updateTaskStatus(task, StatusMerging, "代码拼接：生成融合项目文件")
 	a.logTask(task, "merging", "info", "开始生成融合产物")
 	time.Sleep(700 * time.Millisecond)
@@ -145,6 +184,9 @@ func (a *App) executeFusion(task *FusionTask, projects []Project, apiKey, model 
 	a.logTask(task, "merging", "success", fmt.Sprintf("已生成 %d 个文件", len(flatFiles)))
 
 	// 阶段 6：二次校验
+	if a.throwIfCancelled(task) {
+		return
+	}
 	a.updateTaskStatus(task, StatusVerifying, "二次校验：运行思考流程检查融合产物")
 	time.Sleep(500 * time.Millisecond)
 

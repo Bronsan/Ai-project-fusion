@@ -22,18 +22,27 @@ export default function Settings() {
   const [model, setModel] = useState('gpt-4o-mini')
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState('')
+  const [version, setVersion] = useState('0.12beta')
+  const [changelog, setChangelog] = useState('')
   const [oldPwd, setOldPwd] = useState('')
   const [newPwd, setNewPwd] = useState('')
   const [pwdMsg, setPwdMsg] = useState('')
-  const [version, setVersion] = useState('0.11beta')
-  const [changelog, setChangelog] = useState('')
 
   useEffect(() => {
     if (isWails) {
       window.go.main.App.GetVersion().then(setVersion)
       window.go.main.App.GetChangelog().then(setChangelog)
     } else {
-      setChangelog(`0.11beta
+      setChangelog(`0.12beta
+- 新增：融合引擎升级为真代码融合（同名导出冲突检测与重命名、依赖版本冲突解决、代码级去重）
+- 新增：AI 调用降级策略（超时控制、指数退避重试、流式输出支持）
+- 新增：评分引擎单元测试（vitest，10+ 测试用例验证评分不写死）
+- 新增：上传安全防护（zip 炸弹检测、路径穿越拦截、文件类型白名单）
+- 新增：网页端上传限制 50MB，流量异常自动封号 1 小时（速率+流量双限）
+- 新增：融合执行取消功能（AbortController，全程可取消）
+- 新增：报告页对比视图（融合前后各项目维度对比表）
+
+0.11beta
 - 修复：评分引擎不再写死分数，改为基于真实代码 + 评分规则文件打分
 - 新增：scoring-rules.json 评分标准规则定义文件（类似 skills 的可配置规则）
 - 改进：AI 深度评分传入真实代码摘要（文件数、行数、导出、import、复杂度等）

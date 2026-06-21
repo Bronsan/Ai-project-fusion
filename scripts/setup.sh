@@ -188,7 +188,7 @@ install_system_deps_macos() {
 main() {
     echo -e "${CYAN}"
     echo "╔══════════════════════════════════════════════════════════╗"
-    echo "║     ProjectFusion v0.11beta 环境自动配置脚本              ║"
+    echo "║     ProjectFusion v0.12beta 环境自动配置脚本              ║"
     echo "║     AI 驱动的开源项目智能融合工坊                        ║"
     echo "╚══════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -285,7 +285,7 @@ main() {
     echo -e "${GREEN}║  产物位置：build/bin/ProjectFusion                        ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo -e "${CYAN}ProjectFusion v0.11beta - AI 驱动的开源项目智能融合工坊${NC}"
+    echo -e "${CYAN}ProjectFusion v0.12beta - AI 驱动的开源项目智能融合工坊${NC}"
 }
 
 main "$@"

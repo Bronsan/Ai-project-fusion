@@ -2,7 +2,7 @@
 
 import { useRef, useState, type DragEvent, type ChangeEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { UploadCloud, Loader2, CheckCircle2, AlertCircle, FileArchive } from 'lucide-react'
+import { UploadCloud, Loader2, CheckCircle2, AlertCircle, FileArchive, Shield } from 'lucide-react'
 import { useFusionStore } from '@/store/useFusionStore'
 import type { Project } from '@/lib/types'
 
@@ -92,11 +92,15 @@ export default function UploadZone() {
                 {dragging ? '松开以上传' : '拖拽 zip 项目包到此处'}
               </p>
               <p className="text-xs text-dim">
-                或点击选择文件 · 支持 .zip 格式 · 最大 500MB
+                或点击选择文件 · 支持 .zip 格式 · 网页端最大 50MB（桌面端 500MB）
               </p>
               <div className="flex items-center gap-2 mt-3 text-xs text-dim">
                 <FileArchive size={12} />
                 <span>将自动解析 package.json、README 与文件结构</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1 text-xs text-dim">
+                <Shield size={12} />
+                <span>已启用安全防护：zip 炸弹检测、路径穿越拦截、流量异常封号</span>
               </div>
             </>
           )}

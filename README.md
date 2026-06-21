@@ -1,9 +1,9 @@
 # ProjectFusion · 项目融合工坊
 
-> **v0.11beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
-> **v0.11beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+> **v0.12beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
+> **v0.12beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
 
-![version](https://img.shields.io/badge/version-0.11beta-blue)
+![version](https://img.shields.io/badge/version-0.12beta-blue)
 ![status](https://img.shields.io/badge/status-beta-yellow)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -227,7 +227,23 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   ├── main.tsx            # Entry / 入口
 │   └── index.css           # Global styles / 全局样式
 ├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
-│   └── scoring-rules.json  # Scoring rules definition / 评分规则定义文件
+│   ├── lib/
+│   │   ├── aiClient.ts        # AI client (timeout/retry/stream) / AI 客户端（超时/重试/流式）
+│   │   ├── fusionService.ts   # Fusion orchestration (cancellable) / 融合编排（可取消）
+│   │   ├── mergeEngine.ts     # Real code fusion engine / 真代码融合引擎
+│   │   ├── scoreEngine.ts     # Scoring engine / 评分引擎
+│   │   ├── securityEngine.ts  # Security review / 安全审查
+│   │   ├── thinkEngine.ts     # Thinking process / 思考流程
+│   │   ├── taskRepo.ts        # Task repository / 任务仓库
+│   │   └── uploadSecurity.ts  # Upload security guard / 上传安全防护
+│   ├── routes/
+│   │   ├── ai.ts              # AI routes / AI 路由
+│   │   ├── fusion.ts          # Fusion routes (with cancel) / 融合路由（含取消）
+│   │   ├── projects.ts        # Project upload routes / 项目上传路由
+│   │   └── score.ts           # Score routes / 评分路由
+│   ├── tests/
+│   │   └── scoreEngine.test.ts # Scoring unit tests / 评分单元测试
+│   └── scoring-rules.json     # Scoring rules definition / 评分规则定义文件
 ├── docs/                   # Documentation / 文档
 │   ├── PRD.md              # Product requirements / 产品需求文档
 │   ├── TechnicalArchitecture.md # Tech architecture / 技术架构
@@ -261,7 +277,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 | `ListTasks()` | List tasks / 任务列表 |
 | `UploadProject(path)` | Upload zip / 上传项目 |
 | `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
-| `GetVersion()` | Get version `0.11beta` / 获取版本号 |
+| `GetVersion()` | Get version `0.12beta` / 获取版本号 |
 | `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
@@ -285,6 +301,42 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 ---
 
 ## 📋 Changelog / 版本更新历史
+
+### v0.12beta（2026-06-21）
+
+**6 大优化全面落地 / 6 Major Optimizations**
+
+- **真代码融合** — 融合引擎升级：同名导出冲突检测与重命名（按策略 conservative/balanced/aggressive）、依赖版本冲突解决（取最高兼容版本）、代码级去重（基于导出符号指纹）、自动生成桥接层与冲突报告。
+- **AI 调用降级策略** — 超时控制（AbortController，默认 30s）、指数退避重试（最多 2 次）、流式输出支持（SSE 协议）、4xx 错误不重试。
+- **评分引擎单元测试** — 新增 vitest 测试套件，10+ 测试用例验证评分不写死、不同项目组合得到不同分数、维度分数在 0-100 范围内。
+- **上传安全防护** — zip 炸弹检测（压缩比 > 100:1 阻断）、路径穿越拦截（含 `..` 或绝对路径拒绝）、文件类型白名单、文件数量上限 5000。
+- **网页端 50MB 限制 + 流量异常封号** — 网页端上传上限 50MB（桌面端保持 500MB），速率限制 5 次/分钟，流量限制 200MB/小时，超限自动封号 1 小时。
+- **融合执行取消功能** — 全程支持 AbortController 取消，新增 `POST /api/fusion/:taskId/cancel` 接口，前端执行页新增「取消任务」按钮。
+- **报告页对比视图** — 新增「查看对比」按钮，展示融合前后各项目维度对比表（语言/框架/构建工具/模块系统/许可证/依赖数/文件数 + 5 维度评分对比）。
+
+**测试截图 / Test Screenshot**
+
+![v0.12beta 评分引擎单元测试](docs/screenshots/v0.12/01-test-results.png)
+
+> 10 个测试用例全部通过，验证评分引擎不再写死分数。
+
+**新增文件 / New Files**
+
+- `api/lib/uploadSecurity.ts` — 上传安全防护引擎
+- `api/tests/scoreEngine.test.ts` — 评分引擎单元测试
+- `vitest.config.ts` — 测试配置
+
+**修改文件 / Modified Files**
+
+- `api/lib/mergeEngine.ts` — 重写为真代码融合（冲突检测 + 去重 + 桥接层）
+- `api/lib/aiClient.ts` — 加入超时、重试、流式
+- `api/lib/fusionService.ts` — 加入取消功能
+- `api/routes/projects.ts` — 整合安全防护
+- `api/routes/fusion.ts` — 新增取消接口
+- `src/pages/Report.tsx` — 新增对比视图
+- `src/pages/Execute.tsx` — 新增取消按钮
+- `src/components/UploadZone.tsx` — 显示 50MB 限制与安全提示
+- `src/lib/api.ts` — 新增 `cancelFusionTask` + 50MB 客户端校验
 
 ### v0.11beta（2026-06-20）
 

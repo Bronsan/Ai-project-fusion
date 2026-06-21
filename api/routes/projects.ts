@@ -1,4 +1,6 @@
-// 项目上传路由 - 接收 zip 压缩包，解压并解析项目元数据
+// 项目上传路由 - v0.12beta 增强安全防护
+// 网页端限制 50MB，桌面端 500MB
+// 防护：zip 炸弹、路径穿越、文件类型白名单、流量异常封号
 
 import { Router } from 'express'
 import multer from 'multer'
@@ -9,15 +11,26 @@ import {
   generateProjectId,
   loadProjects,
 } from '../lib/taskRepo.js'
+import {
+  WEB_UPLOAD_LIMIT,
+  isPathTraversal,
+  isAllowedFileType,
+  isZipBomb,
+  validateExtractedFiles,
+  checkRateLimit,
+  getClientIp,
+  isIpBanned,
+  getBanStatus,
+} from '../lib/uploadSecurity.js'
 import type { Project } from '../types.js'
 
 const router = Router()
 
 // multer 配置：仅接收单个 zip 文件，存内存
-// 上限 500MB，支持中大型开源项目（如 lodash、clsx、tailwind-merge 等完整仓库）
+// 网页端 50MB 限制（桌面端走 Wails Go 后端，不受此限制）
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB 上限
+  limits: { fileSize: WEB_UPLOAD_LIMIT },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === 'application/zip' || file.mimetype === 'application/x-zip-compressed' || file.originalname.toLowerCase().endsWith('.zip')) {
       cb(null, true)
@@ -29,8 +42,25 @@ const upload = multer({
 
 /** 上传项目 - 解压 zip 并解析元数据 */
 router.post('/upload', upload.single('file'), (req, res) => {
+  // 获取客户端 IP 并检查封禁状态
+  const clientIp = getClientIp(req)
+  if (isIpBanned(clientIp)) {
+    res.status(403).json({
+      success: false,
+      error: '您的 IP 已因流量异常被封禁，请 1 小时后再试',
+    })
+    return
+  }
+
   if (!req.file) {
     res.status(400).json({ success: false, error: '未收到文件' })
+    return
+  }
+
+  // 速率与流量检查
+  const rateCheck = checkRateLimit(clientIp, req.file.size)
+  if (!rateCheck.ok) {
+    res.status(429).json({ success: false, error: rateCheck.reason })
     return
   }
 
@@ -43,22 +73,65 @@ router.post('/upload', upload.single('file'), (req, res) => {
       return
     }
 
-    // 收集所有文件路径与内容
+    // ========== 安全防护检查 ==========
+    // 1. 路径穿越检测
+    for (const entry of entries) {
+      if (isPathTraversal(entry.entryName)) {
+        res.status(400).json({
+          success: false,
+          error: `检测到路径穿越攻击：${entry.entryName}，已拒绝上传`,
+        })
+        return
+      }
+    }
+
+    // 2. zip 炸弹检测
+    const compressedSize = req.file.size
+    const totalUncompressed = entries.reduce((sum, e) => sum + (e.header.size || 0), 0)
+    if (isZipBomb(compressedSize, totalUncompressed)) {
+      res.status(400).json({
+        success: false,
+        error: `检测到 zip 炸弹：压缩比 ${Math.round(totalUncompressed / compressedSize)}:1 异常，已拒绝上传`,
+      })
+      return
+    }
+
+    // 3. 综合安全校验
+    const securityCheck = validateExtractedFiles(
+      entries.map((e) => ({ entryName: e.entryName, size: e.header.size || 0 })),
+      compressedSize
+    )
+    if (!securityCheck.ok) {
+      res.status(400).json({ success: false, error: securityCheck.reason })
+      return
+    }
+
+    // 收集所有文件路径与内容（带白名单过滤）
     const files: { path: string; content: string }[] = []
     for (const entry of entries) {
       if (entry.isDirectory) continue
       // 跳过 node_modules、.git 等无关目录
       const entryPath = entry.entryName
       if (shouldSkip(entryPath)) continue
+      // 文件类型白名单校验
+      if (!isAllowedFileType(entryPath)) continue
       try {
         const content = entry.getData().toString('utf-8')
-        // 仅保留文本文件，跳过二进制
-        if (isTextFile(entryPath) && content.length < 200000) {
+        // 仅保留合理大小的文本文件
+        if (content.length < 200000) {
           files.push({ path: normalizePath(entryPath), content })
         }
       } catch {
         // 解析失败的文件跳过
       }
+    }
+
+    if (files.length === 0) {
+      res.status(400).json({
+        success: false,
+        error: '压缩包内没有可识别的文本文件（已过滤二进制与不支持的类型）',
+      })
+      return
     }
 
     // 解析项目元数据
@@ -87,6 +160,22 @@ router.post('/upload', upload.single('file'), (req, res) => {
   }
 })
 
+/** 查询当前 IP 的封禁状态 */
+router.get('/upload/status', (req, res) => {
+  const clientIp = getClientIp(req)
+  const { banned, remainingMs } = getBanStatus(clientIp)
+  res.json({
+    success: true,
+    data: {
+      ip: clientIp,
+      banned,
+      remainingMs,
+      uploadLimit: WEB_UPLOAD_LIMIT,
+      uploadLimitMB: WEB_UPLOAD_LIMIT / 1024 / 1024,
+    },
+  })
+})
+
 /** 删除上传项目 */
 router.delete('/:id', async (req, res) => {
   const ok = removeUploadedProject(req.params.id)
@@ -107,20 +196,6 @@ router.get('/', async (_req, res) => {
 function shouldSkip(p: string): boolean {
   const skip = ['node_modules/', '.git/', 'dist/', 'build/', '.next/', '__pycache__/', '.DS_Store']
   return skip.some((s) => p.includes(s))
-}
-
-/** 判断是否为文本文件 */
-function isTextFile(p: string): boolean {
-  const textExt = [
-    '.ts', '.tsx', '.js', '.jsx', '.vue', '.json', '.md', '.txt',
-    '.css', '.scss', '.less', '.html', '.yml', '.yaml', '.xml',
-    '.py', '.go', '.rs', '.java', '.c', '.cpp', '.h', '.sh',
-    '.env', '.gitignore', '.toml', '.ini', '.conf',
-  ]
-  const lower = p.toLowerCase()
-  // 无扩展名但常见配置文件
-  if (lower.endsWith('license') || lower.endsWith('readme') || lower.endsWith('makefile')) return true
-  return textExt.some((ext) => lower.endsWith(ext))
 }
 
 /** 规范化路径 - 去除顶层目录前缀 */

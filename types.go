@@ -13,18 +13,18 @@ const (
 
 // Project 开源项目
 type Project struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	Description  string         `json:"description"`
-	Language     string         `json:"language"`
-	Tags         []string       `json:"tags"`
-	Stars        int            `json:"stars"`
-	License      string         `json:"license"`
-	Readme       string         `json:"readme"`
-	Source       ProjectSource  `json:"source"`
+	ID           string           `json:"id"`
+	Name         string           `json:"name"`
+	Description  string           `json:"description"`
+	Language     string           `json:"language"`
+	Tags         []string         `json:"tags"`
+	Stars        int              `json:"stars"`
+	License      string           `json:"license"`
+	Readme       string           `json:"readme"`
+	Source       ProjectSource    `json:"source"`
 	Structure    ProjectStructure `json:"structure"`
-	Dependencies []string       `json:"dependencies"`
-	Files        []ProjectFile  `json:"files,omitempty"`
+	Dependencies []string         `json:"dependencies"`
+	Files        []ProjectFile    `json:"files,omitempty"`
 }
 
 // ProjectStructure 项目结构特征
@@ -67,6 +67,7 @@ const (
 	StatusVerifying FusionTaskStatus = "verifying"
 	StatusDone      FusionTaskStatus = "done"
 	StatusFailed    FusionTaskStatus = "failed"
+	StatusCancelled FusionTaskStatus = "cancelled"
 )
 
 // LogEntry 日志条目
@@ -79,17 +80,17 @@ type LogEntry struct {
 
 // FusionTask 融合任务
 type FusionTask struct {
-	ID           string           `json:"id"`
-	ProjectIDs   []string         `json:"projectIds"`
-	Strategy     string           `json:"strategy"`
-	SecurityLevel int             `json:"securityLevel"`
-	Status       FusionTaskStatus `json:"status"`
-	CurrentStep  string           `json:"currentStep"`
-	Score        int              `json:"score"`
-	Logs         []LogEntry       `json:"logs"`
-	Report       *FusionReport    `json:"report,omitempty"`
-	CreatedAt    string           `json:"createdAt"`
-	UpdatedAt    string           `json:"updatedAt"`
+	ID            string           `json:"id"`
+	ProjectIDs    []string         `json:"projectIds"`
+	Strategy      string           `json:"strategy"`
+	SecurityLevel int              `json:"securityLevel"`
+	Status        FusionTaskStatus `json:"status"`
+	CurrentStep   string           `json:"currentStep"`
+	Score         int              `json:"score"`
+	Logs          []LogEntry       `json:"logs"`
+	Report        *FusionReport    `json:"report,omitempty"`
+	CreatedAt     string           `json:"createdAt"`
+	UpdatedAt     string           `json:"updatedAt"`
 }
 
 // FusionReport 融合报告
@@ -130,15 +131,15 @@ type MergePlan struct {
 
 // ThinkingResult 思考流程结果
 type ThinkingResult struct {
-	Steps    []string  `json:"steps"`
-	Summary  string    `json:"summary"`
+	Steps     []string  `json:"steps"`
+	Summary   string    `json:"summary"`
 	MergePlan MergePlan `json:"mergePlan"`
 }
 
 // SecurityReviewResult 安全审查结果
 type SecurityReviewResult struct {
-	Passed bool             `json:"passed"`
-	Issues []SecurityIssue  `json:"issues"`
+	Passed bool            `json:"passed"`
+	Issues []SecurityIssue `json:"issues"`
 }
 
 // VerifyResult 二次校验结果
