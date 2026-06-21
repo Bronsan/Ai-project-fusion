@@ -1,6 +1,6 @@
 // Package main - Wails 桌面应用入口
 // ProjectFusion - AI 驱动的开源项目智能融合工坊
-// 版本：0.12beta
+// 版本：0.13beta
 
 package main
 
@@ -22,7 +22,7 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:     "ProjectFusion 0.12beta",
+		Title:     "ProjectFusion 0.13beta",
 		Width:     1280,
 		Height:    820,
 		MinWidth:  960,

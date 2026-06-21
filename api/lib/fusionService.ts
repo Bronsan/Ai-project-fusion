@@ -12,6 +12,7 @@ import type {
 import { runThinkingProcess, runVerificationThinking } from './thinkEngine.js'
 import { runSecurityReview } from './securityEngine.js'
 import { runMerge } from './mergeEngine.js'
+import { scanFusionProduct } from './productSecurityScanner.js'
 import { aiDeepScore, SCORE_THRESHOLD } from './scoreEngine.js'
 import { saveTask } from './taskRepo.js'
 
@@ -149,7 +150,6 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
       task.currentStep = '评分未达标，流程终止'
       return
     }
-
     // 阶段 5：代码拼接
     throwIfCancelled(effectiveSignal)
     updateStatus(task, 'merging', '代码拼接：生成融合项目文件')
@@ -165,7 +165,27 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     const flatFiles = flattenFiles(files)
     log(task, 'merging', 'success', `已生成 ${flatFiles.length} 个文件`)
 
-    // 阶段 6：二次校验
+    // 阶段 6：融合产物安全扫描（v0.13 新增）
+    throwIfCancelled(effectiveSignal)
+    updateStatus(task, 'verifying', '产物安全扫描：检查融合后代码的安全问题')
+    log(task, 'verifying', 'info', '启动产物安全扫描引擎')
+    await delay(300, effectiveSignal)
+
+    const productScan = scanFusionProduct(files)
+    throwIfCancelled(effectiveSignal)
+    log(task, 'verifying', 'info', `扫描 ${productScan.scannedFiles} 个文件，发现 ${productScan.issues.length} 个安全问题`)
+    for (const issue of productScan.issues) {
+      const levelIcon = { low: '⚠️', medium: '⚠️', high: '🔴', critical: '🚨' }[issue.level]
+      log(task, 'verifying', issue.level === 'low' ? 'info' : 'warn',
+        `${levelIcon} [${issue.level}] ${issue.file}: ${issue.description}`)
+    }
+    if (productScan.passed) {
+      log(task, 'verifying', 'success', '产物安全扫描通过，无 critical/high 级别问题')
+    } else {
+      log(task, 'verifying', 'warn', '产物安全扫描发现 critical/high 问题，建议修复后再使用')
+    }
+
+    // 阶段 7：二次校验
     throwIfCancelled(effectiveSignal)
     updateStatus(task, 'verifying', '二次校验：运行思考流程检查融合产物')
     await delay(500, effectiveSignal)
@@ -183,7 +203,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
 
     // 阶段 7：生成报告
     throwIfCancelled(effectiveSignal)
-    task.report = buildReport(task, thinking, dimensions, review.issues, files, true)
+    task.report = buildReport(task, thinking, dimensions, review.issues, files, true, productScan.issues)
     task.status = 'done'
     task.currentStep = '融合完成'
     log(task, 'verifying', 'success', '融合任务完成，可下载产物')
@@ -234,7 +254,8 @@ function buildReport(
   dimensions: ScoreDimension[],
   issues: any[],
   files: any[],
-  passed: boolean
+  passed: boolean,
+  productScanIssues: any[] = []
 ): FusionReport {
   return {
     taskId: task.id,
@@ -243,6 +264,7 @@ function buildReport(
     thinkingSteps: thinking.steps,
     dimensions,
     issues,
+    productScanIssues,
     files,
     passed,
   }

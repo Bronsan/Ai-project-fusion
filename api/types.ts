@@ -82,6 +82,8 @@ export interface FusionReport {
   thinkingSteps: string[];
   dimensions: ScoreDimension[];
   issues: SecurityIssue[];
+  /** 融合产物安全扫描结果（v0.13 新增） */
+  productScanIssues?: SecurityIssue[];
   files: FileNode[];
   passed: boolean;     // 是否通过 75 分阈值
 }

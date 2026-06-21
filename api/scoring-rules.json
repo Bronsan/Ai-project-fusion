@@ -1,6 +1,6 @@
 {
   "$schema": "scoring-rules.v1",
-  "version": "0.12beta",
+  "version": "0.13beta",
   "description": "ProjectFusion 适配性评分标准规则定义 - AI 读取代码后按此规则打分",
   "threshold": 75,
   "dimensions": [

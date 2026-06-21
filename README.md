@@ -1,9 +1,9 @@
 # ProjectFusion · 项目融合工坊
 
-> **v0.12beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
-> **v0.12beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+> **v0.13beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
+> **v0.13beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
 
-![version](https://img.shields.io/badge/version-0.12beta-blue)
+![version](https://img.shields.io/badge/version-0.13beta-blue)
 ![status](https://img.shields.io/badge/status-beta-yellow)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -277,7 +277,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 | `ListTasks()` | List tasks / 任务列表 |
 | `UploadProject(path)` | Upload zip / 上传项目 |
 | `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
-| `GetVersion()` | Get version `0.12beta` / 获取版本号 |
+| `GetVersion()` | Get version `0.13beta` / 获取版本号 |
 | `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
@@ -301,6 +301,22 @@ Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
 ---
 
 ## 📋 Changelog / 版本更新历史
+
+### v0.13beta（2026-06-21）
+
+**AST 语义级融合引擎 / AST Semantic Fusion Engine**
+
+- **新增：AST 语义级融合引擎** — @babel/parser，替代 regex 扫描，支持函数/类/常量/接口/类型/枚举实体提取。
+- **新增：intra-entity 3-way merge** — 同名实体改动不重叠时自动合并函数体，Weave 风格。
+- **新增：融合产物安全扫描** — 硬编码密钥、eval、SQL 注入、调试语句、路径穿越、ReDoS。
+- **改进：实体级冲突检测** — 同名不同种类不再误判，如 class Foo vs function Foo。
+- **改进：去重基于 AST 实体 body 哈希** — 更精准。
+
+**测试截图 / Test Screenshot**
+
+![v0.13beta P0 测试结果](docs/screenshots/v0.13/01-test-results.png)
+
+> 33 个测试全部通过：AST 解析 13 + 产物安全扫描 10 + 评分引擎 10。
 
 ### v0.12beta（2026-06-21）
 

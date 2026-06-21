@@ -80,7 +80,7 @@ export default function Modules() {
           </div>
           <div>
             <h1 className="text-lg font-bold">ProjectFusion</h1>
-            <p className="text-[10px] text-dim">v0.12beta</p>
+            <p className="text-[10px] text-dim">v0.13beta</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

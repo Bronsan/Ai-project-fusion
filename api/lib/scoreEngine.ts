@@ -1,5 +1,5 @@
 // 评分引擎 - 基于真实代码内容 + 评分规则文件计算适配性评分
-// v0.12beta: 不再写死分数，AI 读取代码后按 scoring-rules.json 规则打分
+// v0.13beta: 不再写死分数，AI 读取代码后按 scoring-rules.json 规则打分
 
 import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
