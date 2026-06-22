@@ -22,7 +22,7 @@ export default function Settings() {
   const [model, setModel] = useState('gpt-4o-mini')
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState('')
-  const [version, setVersion] = useState('0.13beta')
+  const [version, setVersion] = useState('0.13')
   const [changelog, setChangelog] = useState('')
   const [oldPwd, setOldPwd] = useState('')
   const [newPwd, setNewPwd] = useState('')
@@ -33,7 +33,7 @@ export default function Settings() {
       window.go.backend.App.GetVersion().then(setVersion)
       window.go.backend.App.GetChangelog().then(setChangelog)
     } else {
-      setChangelog(`0.13beta
+      setChangelog(`0.13
 - 新增：AST 语义级融合引擎（@babel/parser，替代 regex 扫描，支持函数/类/常量/接口/类型/枚举实体提取）
 - 新增：intra-entity 3-way merge（同名实体改动不重叠时自动合并函数体，Weave 风格）
 - 新增：融合产物安全扫描（硬编码密钥、eval、SQL 注入、调试语句、路径穿越、ReDoS）

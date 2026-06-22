@@ -8,7 +8,7 @@ import (
 )
 
 // AppVersion 应用版本号常量 - 所有产物文件标记使用此版本
-const AppVersion = "0.13beta"
+const AppVersion = "0.13"
 
 // App 应用结构体 - 所有导出方法可通过 Wails 绑定被前端调用
 type App struct {
@@ -47,7 +47,7 @@ func (a *App) GetVersion() string {
 
 // GetChangelog 获取更新日志
 func (a *App) GetChangelog() string {
-	return `0.13beta
+	return `0.13
 - 新增：AST 语义级融合引擎（@babel/parser，替代 regex 扫描，支持函数/类/常量/接口/类型/枚举实体提取）
 - 新增：intra-entity 3-way merge（同名实体改动不重叠时自动合并函数体，Weave 风格）
 - 新增：融合产物安全扫描（硬编码密钥、eval、SQL 注入、调试语句、路径穿越、ReDoS）

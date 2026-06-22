@@ -1,4 +1,4 @@
-// 拼接引擎 - v0.13beta 升级为 AST 语义级融合
+// 拼接引擎 - v0.13 升级为 AST 语义级融合
 // v0.12: regex 扫描导出 + 重命名 + 去重
 // v0.13: @babel/parser AST 实体提取 + intra-entity 3-way merge + 产物安全扫描
 //
@@ -66,7 +66,7 @@ export interface MergeResult {
 
 /**
  * 执行代码拼接 - 生成融合后的项目文件树
- * v0.13beta: AST 语义级融合 + intra-entity merge
+ * v0.13: AST 语义级融合 + intra-entity merge
  * P1-4: 同时返回依赖图分析结果
  */
 export async function runMerge(
@@ -421,7 +421,7 @@ function generateBridgeFiles(
 
   const lines: string[] = [
     '// 桥接层 - 处理融合过程中的导出冲突、去重与 AST 合并',
-    '// 此文件由 v0.13beta AST 融合引擎自动生成',
+    '// 此文件由 v0.13 AST 融合引擎自动生成',
     '',
   ]
 
@@ -494,7 +494,7 @@ function collectUploadedFiles(
       path: 'src/bridge/merged-entities.ts',
       content: [
         '// AST 自动合并的实体 - 两项目改动不重叠，已合并函数体',
-        '// v0.13beta intra-entity 3-way merge 产物',
+        '// v0.13 intra-entity 3-way merge 产物',
         '',
         ...mergedSources,
       ].join('\n\n'),
@@ -521,7 +521,7 @@ function fallbackFiles(
   return [
     {
       path: 'README.md',
-      content: `# ${projects.map((p) => p.name).join(' + ')} 融合项目\n\n由 ProjectFusion v0.13beta 自动生成。\n\n## 来源项目\n${projects.map((p) => `- ${p.name}: ${p.description}`).join('\n')}\n\n## 目录结构\n${plan.targetStructure.map((s) => `- \`${s.path}\`: ${s.purpose}`).join('\n')}${conflictNote}${mergeNote}`,
+      content: `# ${projects.map((p) => p.name).join(' + ')} 融合项目\n\n由 ProjectFusion v0.13 自动生成。\n\n## 来源项目\n${projects.map((p) => `- ${p.name}: ${p.description}`).join('\n')}\n\n## 目录结构\n${plan.targetStructure.map((s) => `- \`${s.path}\`: ${s.purpose}`).join('\n')}${conflictNote}${mergeNote}`,
     },
     {
       path: 'src/index.ts',

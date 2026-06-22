@@ -8,10 +8,10 @@
   "frontend:dev:serverUrl": "auto",
   "frontend:dir": ".",
   "wailsjsdir": "./src",
-  "version": "0.13beta",
+  "version": "0.13",
   "info": {
     "productName": "ProjectFusion",
-    "productVersion": "0.13beta",
+    "productVersion": "0.13",
     "companyName": "ProjectFusion",
     "comments": "AI 驱动的开源项目智能融合工坊"
   }

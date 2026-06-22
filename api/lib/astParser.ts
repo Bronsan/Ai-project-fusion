@@ -1,4 +1,4 @@
-// AST 解析器 - v0.13beta
+// AST 解析器 - v0.13
 // 用 @babel/parser 替代 regex，做真正的语义级实体提取
 // 支持识别：函数、类、常量、接口、类型、枚举
 // 支持语言：TypeScript / JavaScript / TSX / JSX

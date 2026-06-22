@@ -16,7 +16,7 @@ import ThemeToggle from '@/components/ThemeToggle'
 const MODULES = [
   {
     id: 'fusion',
-    title: '项目融合工坊',
+    title: '项目融合测试工坊',
     subtitle: 'Project Fusion',
     description: '选择多个项目，AI 思考流程分析 → 安全审查 → 适配性评分 → 自动拼接融合',
     icon: GitMerge,
@@ -31,7 +31,7 @@ const MODULES = [
     description: '上传自有项目 zip 压缩包，自动解析元数据，与内置演示项目混合参与融合',
     icon: Upload,
     color: 'linear-gradient(135deg, #5CE1E6, #6EFFC7)',
-    path: '/select',
+    path: '/select#upload',
     badge: '已更新',
   },
   {
@@ -80,7 +80,7 @@ export default function Modules() {
           </div>
           <div>
             <h1 className="text-lg font-bold">ProjectFusion</h1>
-            <p className="text-[10px] text-dim">v0.13beta</p>
+            <p className="text-[10px] text-dim">v0.13</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

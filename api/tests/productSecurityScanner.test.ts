@@ -1,4 +1,4 @@
-// productSecurityScanner 单元测试 - v0.13beta
+// productSecurityScanner 单元测试 - v0.13
 // 验证融合产物安全扫描器对各类风险模式的识别与计数
 
 import { describe, it, expect } from 'vitest'

@@ -1,4 +1,4 @@
-// v0.13beta 真实页面截图脚本
+// v0.13 真实页面截图脚本
 // 用 puppeteer-core + chrome-headless-shell 对运行中的 web 应用截图
 // Web 模式下登录是本地模拟，通过 localStorage 注入登录态
 // 关键：首次 autoLogin 后用 SPA 导航（pushState + popstate）避免 store 重置

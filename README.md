@@ -1,10 +1,10 @@
 # ProjectFusion · 项目融合工坊
 
-> **v0.13beta** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
-> **v0.13beta** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
+> **v0.13** · An AI-powered open-source project fusion workbench with built-in API key, adaptability scoring, security review, and intelligent code merging.
+> **v0.13** · 一款内置 AI 与 API Key 的开源项目智能融合工坊，提供适配性评分、安全审查与代码拼接能力。
 
-![version](https://img.shields.io/badge/version-0.13beta-blue)
-![status](https://img.shields.io/badge/status-beta-yellow)
+![version](https://img.shields.io/badge/version-0.13-blue)
+![status](https://img.shields.io/badge/status-stable-brightgreen)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
 ---
@@ -290,7 +290,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.backend.App.*`:
 | `ListTasks()` | List tasks / 任务列表 |
 | `UploadProject(path)` | Upload zip / 上传项目 |
 | `DeleteUploadedProject(id)` | Delete uploaded / 删除上传项目 |
-| `GetVersion()` | Get version `0.13beta` / 获取版本号 |
+| `GetVersion()` | Get version `0.13` / 获取版本号 |
 | `GetChangelog()` | Get changelog / 获取更新日志 |
 
 ---
@@ -315,7 +315,7 @@ Desktop mode exposes Go methods to the frontend via `window.go.backend.App.*`:
 
 ## 📋 Changelog / 版本更新历史
 
-### v0.13beta（2026-06-21）
+### v0.13 正式版（2026-06-22）
 
 **P1 升级：冲突可视化 + 依赖图分析 / Conflict Visualization + Dependency Graph**
 

@@ -1,4 +1,4 @@
-// astParser 单元测试 - v0.13beta
+// astParser 单元测试 - v0.13
 // 验证基于 @babel/parser 的语义级实体提取与 body 差异计算
 
 import { describe, it, expect } from 'vitest'

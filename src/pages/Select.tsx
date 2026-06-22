@@ -26,6 +26,16 @@ export default function Select() {
     loadProjects()
   }, [loadProjects])
 
+  // 从模块中心"项目管理"跳转来时滚动到上传区域
+  useEffect(() => {
+    if (window.location.hash === '#upload') {
+      const el = document.getElementById('upload')
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
+      }
+    }
+  }, [])
+
   // 选择变化时重新计算预评分
   useEffect(() => {
     computePreview()
@@ -63,7 +73,7 @@ export default function Select() {
         {/* 项目网格 - 占 2 列 */}
         <div className="lg:col-span-2 space-y-6">
           {/* 上传区域 */}
-          <div>
+          <div id="upload">
             <div className="flex items-center gap-2 mb-3">
               <Upload size={16} className="text-aurora-purple" />
               <h2 className="text-sm font-semibold">上传自有项目</h2>
