@@ -137,12 +137,12 @@ export default function Login() {
             <div>
               <label className="text-xs text-dim mb-1.5 block">用户名</label>
               <div className="relative">
-                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dim" />
+                <User size={16} className="absolute left-1 top-1/2 -translate-y-1/2 text-dim" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="input pl-10"
+                  className="input pl-9"
                   placeholder="至少 2 个字符"
                   required
                   minLength={2}
@@ -154,12 +154,12 @@ export default function Login() {
             <div>
               <label className="text-xs text-dim mb-1.5 block">密码</label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dim" />
+                <Lock size={16} className="absolute left-1 top-1/2 -translate-y-1/2 text-dim" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input pl-10 pr-10"
+                  className="input pl-9 pr-10"
                   placeholder="至少 6 个字符"
                   required
                   minLength={6}
@@ -184,12 +184,12 @@ export default function Login() {
                 >
                   <label className="text-xs text-dim mb-1.5 block">确认密码</label>
                   <div className="relative">
-                    <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dim" />
+                    <Lock size={16} className="absolute left-1 top-1/2 -translate-y-1/2 text-dim" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="input pl-10"
+                      className="input pl-9"
                       placeholder="再次输入密码"
                       required
                       minLength={6}

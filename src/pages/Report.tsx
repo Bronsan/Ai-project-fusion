@@ -7,11 +7,14 @@ import { motion } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, CheckCircle2, AlertCircle, Download,
   Shield, FileText, Copy, Check, Loader2, GitCompare,
+  GitMerge, Network,
 } from 'lucide-react'
 import GlassCard from '@/components/GlassCard'
 import RadarChart from '@/components/RadarChart'
 import CountUp from '@/components/CountUp'
 import FileTree from '@/components/FileTree'
+import DiffViewer from '@/components/DiffViewer'
+import DependencyGraph from '@/components/DependencyGraph'
 import { fetchTask, fetchProjects, getDownloadUrl } from '@/lib/api'
 import type { FusionTask, FileNode, Project, ScoreDimension } from '@/lib/types'
 
@@ -32,6 +35,8 @@ export default function Report() {
   const [copied, setCopied] = useState(false)
   const [sourceProjects, setSourceProjects] = useState<Project[]>([])
   const [showCompare, setShowCompare] = useState(false)
+  // P1-2/P1-4: 报告标签页
+  const [activeTab, setActiveTab] = useState<'overview' | 'conflicts' | 'dependency'>('overview')
 
   useEffect(() => {
     if (!taskId) return
@@ -166,6 +171,66 @@ export default function Report() {
           </div>
         </GlassCard>
       </motion.div>
+
+      {/* P1-2/P1-4: 标签栏 - 切换总览/冲突详情/依赖图 */}
+      {(report.mergeStats || report.dependencyGraph) && (
+        <div className="flex items-center gap-1 mb-4 p-1 rounded-xl" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+          <TabButton
+            active={activeTab === 'overview'}
+            onClick={() => setActiveTab('overview')}
+            icon={FileText}
+            label="总览"
+          />
+          {report.mergeStats && (
+            <TabButton
+              active={activeTab === 'conflicts'}
+              onClick={() => setActiveTab('conflicts')}
+              icon={GitMerge}
+              label={`冲突详情 (${report.mergeStats.merged + report.mergeStats.deduplicated + report.mergeStats.renamed})`}
+            />
+          )}
+          {report.dependencyGraph && (
+            <TabButton
+              active={activeTab === 'dependency'}
+              onClick={() => setActiveTab('dependency')}
+              icon={Network}
+              label="依赖图"
+            />
+          )}
+        </div>
+      )}
+
+      {/* P1-2: 冲突详情标签页 */}
+      {activeTab === 'conflicts' && report.mergeStats && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <GlassCard className="p-6 mb-6">
+            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
+              <GitMerge size={16} className="text-aurora-cyan" />
+              AST 实体合并决策
+            </h3>
+            <p className="text-xs text-dim mb-4 leading-relaxed">
+              展示融合过程中同名实体的合并决策：自动合并（改动不重叠）、去重（实现相同）、重命名（改动重叠）。
+            </p>
+            <DiffViewer mergeStats={report.mergeStats} />
+          </GlassCard>
+        </motion.div>
+      )}
+
+      {/* P1-4: 依赖图标签页 */}
+      {activeTab === 'dependency' && report.dependencyGraph && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <GlassCard className="p-6 mb-6">
+            <h3 className="text-base font-semibold mb-4 flex items-center gap-2">
+              <Network size={16} className="text-aurora-purple" />
+              依赖关系图
+            </h3>
+            <p className="text-xs text-dim mb-4 leading-relaxed">
+              基于 AST 提取的 import 关系构建的依赖图，检测循环依赖、孤立模块与共享依赖。
+            </p>
+            <DependencyGraph graph={report.dependencyGraph} />
+          </GlassCard>
+        </motion.div>
+      )}
 
       {/* 对比视图 - 展示融合前后各项目维度对比 */}
       {showCompare && sourceProjects.length >= 2 && (
@@ -371,6 +436,33 @@ function countFiles(nodes: FileNode[]): number {
     if (n.children) count += countFiles(n.children)
   }
   return count
+}
+
+/** 标签按钮 - P1-2/P1-4 新增 */
+function TabButton({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean
+  onClick: () => void
+  icon: any
+  label: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+      style={{
+        background: active ? 'rgba(124, 92, 255, 0.15)' : 'transparent',
+        color: active ? 'var(--color-aurora-purple)' : 'var(--color-text-dim)',
+      }}
+    >
+      <Icon size={12} />
+      {label}
+    </button>
+  )
 }
 
 /** 对比表格行 - 高亮最后一列（融合产物） */

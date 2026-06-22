@@ -84,8 +84,59 @@ export interface FusionReport {
   issues: SecurityIssue[];
   /** 融合产物安全扫描结果（v0.13 新增） */
   productScanIssues?: SecurityIssue[];
+  /** 实体合并统计与详情（P1-2 新增，用于冲突可视化） */
+  mergeStats?: MergeStatsInfo;
+  /** 依赖图分析结果（P1-4 新增，用于依赖图可视化） */
+  dependencyGraph?: DependencyGraphInfo;
   files: FileNode[];
   passed: boolean;     // 是否通过 75 分阈值
+}
+
+/** 实体合并统计 - 前端可视化用 */
+export interface MergeStatsInfo {
+  merged: number;
+  deduplicated: number;
+  renamed: number;
+  details: MergeDetailInfo[];
+}
+
+/** 合并详情 - 单个实体的合并决策 */
+export interface MergeDetailInfo {
+  decision: 'merged' | 'deduplicated' | 'renamed' | 'no_conflict';
+  reason: string;
+  affectedEntities: string[];
+  /** 合并后的源码（merged 决策才有） */
+  mergedSource?: string;
+}
+
+/** 依赖图分析结果 */
+export interface DependencyGraphInfo {
+  /** 图节点 */
+  nodes: GraphNodeInfo[];
+  /** 图边 */
+  edges: GraphEdgeInfo[];
+  /** 检测到的循环依赖 */
+  cycles: string[][];
+  /** 孤立模块（无入边无出边） */
+  orphans: string[];
+  /** 共享依赖（被多个项目依赖） */
+  sharedDeps: string[];
+}
+
+/** 图节点 */
+export interface GraphNodeInfo {
+  id: string;
+  label: string;
+  type: 'project' | 'module' | 'external';
+  project: string;
+}
+
+/** 图边 */
+export interface GraphEdgeInfo {
+  from: string;
+  to: string;
+  /** 依赖类型 */
+  kind: 'import' | 'require' | 'dynamic';
 }
 
 /** 融合任务 */

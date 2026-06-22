@@ -69,8 +69,52 @@ export interface FusionReport {
   thinkingSteps: string[];
   dimensions: ScoreDimension[];
   issues: SecurityIssue[];
+  /** 融合产物安全扫描结果 */
+  productScanIssues?: SecurityIssue[];
+  /** 实体合并统计与详情（P1-2，冲突可视化） */
+  mergeStats?: MergeStatsInfo;
+  /** 依赖图分析结果（P1-4，依赖图可视化） */
+  dependencyGraph?: DependencyGraphInfo;
   files: FileNode[];
   passed: boolean;
+}
+
+/** 实体合并统计 - 前端可视化用 */
+export interface MergeStatsInfo {
+  merged: number;
+  deduplicated: number;
+  renamed: number;
+  details: MergeDetailInfo[];
+}
+
+/** 合并详情 - 单个实体的合并决策 */
+export interface MergeDetailInfo {
+  decision: 'merged' | 'deduplicated' | 'renamed' | 'no_conflict';
+  reason: string;
+  affectedEntities: string[];
+  mergedSource?: string;
+}
+
+/** 依赖图分析结果 */
+export interface DependencyGraphInfo {
+  nodes: GraphNodeInfo[];
+  edges: GraphEdgeInfo[];
+  cycles: string[][];
+  orphans: string[];
+  sharedDeps: string[];
+}
+
+export interface GraphNodeInfo {
+  id: string;
+  label: string;
+  type: 'project' | 'module' | 'external';
+  project: string;
+}
+
+export interface GraphEdgeInfo {
+  from: string;
+  to: string;
+  kind: 'import' | 'require' | 'dynamic';
 }
 
 export interface FusionTask {

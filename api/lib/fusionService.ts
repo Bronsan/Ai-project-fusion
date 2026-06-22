@@ -156,14 +156,26 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     log(task, 'merging', 'info', '开始生成融合产物')
     await delay(700, effectiveSignal)
 
-    const files = await runMerge(projects, thinking.mergePlan, task.strategy, {
+    const mergeResult = await runMerge(projects, thinking.mergePlan, task.strategy, {
       apiKey: ctx.apiKey,
       model: ctx.model,
       signal: effectiveSignal,
     })
     throwIfCancelled(effectiveSignal)
+    const files = mergeResult.files
     const flatFiles = flattenFiles(files)
     log(task, 'merging', 'success', `已生成 ${flatFiles.length} 个文件`)
+    // P1-2: 记录合并统计
+    log(task, 'merging', 'info',
+      `AST 实体合并：${mergeResult.mergeStats.merged} 处合并、${mergeResult.mergeStats.deduplicated} 处去重、${mergeResult.mergeStats.renamed} 处重命名`)
+    // P1-4: 记录依赖图分析
+    const graph = mergeResult.dependencyGraph
+    if (graph.cycles.length > 0) {
+      log(task, 'merging', 'warn', `检测到 ${graph.cycles.length} 个循环依赖`)
+    }
+    if (graph.sharedDeps.length > 0) {
+      log(task, 'merging', 'info', `共享依赖：${graph.sharedDeps.length} 个（${graph.sharedDeps.slice(0, 5).join(', ')}${graph.sharedDeps.length > 5 ? '...' : ''}）`)
+    }
 
     // 阶段 6：融合产物安全扫描（v0.13 新增）
     throwIfCancelled(effectiveSignal)
@@ -203,7 +215,10 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
 
     // 阶段 7：生成报告
     throwIfCancelled(effectiveSignal)
-    task.report = buildReport(task, thinking, dimensions, review.issues, files, true, productScan.issues)
+    task.report = buildReport(
+      task, thinking, dimensions, review.issues, files, true,
+      productScan.issues, mergeResult.mergeStats, mergeResult.dependencyGraph
+    )
     task.status = 'done'
     task.currentStep = '融合完成'
     log(task, 'verifying', 'success', '融合任务完成，可下载产物')
@@ -255,7 +270,9 @@ function buildReport(
   issues: any[],
   files: any[],
   passed: boolean,
-  productScanIssues: any[] = []
+  productScanIssues: any[] = [],
+  mergeStats?: any,
+  dependencyGraph?: any
 ): FusionReport {
   return {
     taskId: task.id,
@@ -265,6 +282,8 @@ function buildReport(
     dimensions,
     issues,
     productScanIssues,
+    mergeStats,
+    dependencyGraph,
     files,
     passed,
   }

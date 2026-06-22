@@ -36,8 +36,26 @@ export interface CodeEntity {
 /** 解析结果 */
 export interface ParseResult {
   entities: CodeEntity[]
+  /** 提取的 import 关系（P1-4 新增，用于依赖图分析） */
+  imports: ImportRelation[]
   /** 解析错误（不阻断，降级为空） */
   errors: string[]
+}
+
+/** import 关系 - 文件级依赖信息 */
+export interface ImportRelation {
+  /** 源文件路径 */
+  filePath: string
+  /** 导入的模块路径（原始字符串） */
+  source: string
+  /** 导入的具名符号 */
+  specifiers: string[]
+  /** 是否为默认导入 */
+  hasDefault: boolean
+  /** 是否为命名空间导入（import * as） */
+  hasNamespace: boolean
+  /** 是否为动态导入（import()） */
+  isDynamic: boolean
 }
 
 /** 根据文件扩展名推断 babel 插件 */
@@ -65,7 +83,7 @@ export function isAstParseable(filePath: string): boolean {
  */
 export function parseFile(filePath: string, content: string): ParseResult {
   if (!isAstParseable(filePath)) {
-    return { entities: [], errors: [] }
+    return { entities: [], imports: [], errors: [] }
   }
 
   const plugins = pluginsForFile(filePath)
@@ -81,21 +99,90 @@ export function parseFile(filePath: string, content: string): ParseResult {
     })
 
     const entities: CodeEntity[] = []
+    const imports: ImportRelation[] = []
     const lines = content.split('\n')
 
     for (const node of ast.program.body) {
       const entity = extractEntity(node, filePath, content, lines)
       if (entity) entities.push(entity)
-      // 处理 export * from '...' 这类 re-export（不产生实体，跳过）
+      // 提取 import 关系（P1-4 新增，用于依赖图分析）
+      const imp = extractImport(node, filePath)
+      if (imp) imports.push(imp)
     }
 
-    return { entities, errors: [] }
+    return { entities, imports, errors: [] }
   } catch (err) {
     return {
       entities: [],
+      imports: [],
       errors: [`${filePath}: ${(err as Error).message}`],
     }
   }
+}
+
+/** 从 AST 顶层节点提取 import 关系（P1-4 新增） */
+function extractImport(node: any, filePath: string): ImportRelation | null {
+  // 静态 import: import { a } from 'b'
+  if (node.type === 'ImportDeclaration' && node.source?.value) {
+    const specifiers: string[] = []
+    let hasDefault = false
+    let hasNamespace = false
+    for (const spec of node.specifiers || []) {
+      if (spec.type === 'ImportDefaultSpecifier') {
+        hasDefault = true
+        if (spec.local?.name) specifiers.push(spec.local.name)
+      } else if (spec.type === 'ImportNamespaceSpecifier') {
+        hasNamespace = true
+        if (spec.local?.name) specifiers.push(spec.local.name)
+      } else if (spec.type === 'ImportSpecifier') {
+        if (spec.local?.name) specifiers.push(spec.local.name)
+      }
+    }
+    return {
+      filePath,
+      source: node.source.value,
+      specifiers,
+      hasDefault,
+      hasNamespace,
+      isDynamic: false,
+    }
+  }
+
+  // 动态 import: import('b').then(...)
+  if (node.type === 'ExpressionStatement' &&
+      node.expression?.type === 'CallExpression' &&
+      node.expression.callee?.type === 'Import') {
+    const arg = node.expression.arguments?.[0]
+    if (arg?.value) {
+      return {
+        filePath,
+        source: arg.value,
+        specifiers: [],
+        hasDefault: false,
+        hasNamespace: false,
+        isDynamic: true,
+      }
+    }
+  }
+
+  // require('b') - CommonJS
+  if (node.type === 'ExpressionStatement' &&
+      node.expression?.type === 'CallExpression' &&
+      node.expression.callee?.name === 'require') {
+    const arg = node.expression.arguments?.[0]
+    if (arg?.value) {
+      return {
+        filePath,
+        source: arg.value,
+        specifiers: [],
+        hasDefault: false,
+        hasNamespace: false,
+        isDynamic: false,
+      }
+    }
+  }
+
+  return null
 }
 
 /** 从 AST 顶层节点提取实体 */

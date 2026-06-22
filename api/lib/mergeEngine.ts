@@ -22,6 +22,8 @@ import {
   type MergeStats,
   type EntityMergeResult,
 } from './entityMerger.js'
+import { buildDependencyGraph } from './dependencyGraph.js'
+import type { DependencyGraphInfo } from '../types.js'
 
 /** 融合上下文 - 用于取消与日志 */
 export interface MergeContext {
@@ -55,16 +57,24 @@ export interface MergeProduct {
   conflictReport: string[]
 }
 
+/** 融合结果 - 包含文件树、合并统计、依赖图（P1-2/P1-4 新增） */
+export interface MergeResult {
+  files: FileNode[]
+  mergeStats: MergeStats
+  dependencyGraph: DependencyGraphInfo
+}
+
 /**
  * 执行代码拼接 - 生成融合后的项目文件树
  * v0.13beta: AST 语义级融合 + intra-entity merge
+ * P1-4: 同时返回依赖图分析结果
  */
 export async function runMerge(
   projects: Project[],
   plan: MergePlan,
   strategy: FusionStrategy,
   options: { apiKey?: string; model?: string; signal?: AbortSignal } = {}
-): Promise<FileNode[]> {
+): Promise<MergeResult> {
   const ctx: MergeContext = { apiKey: options.apiKey, model: options.model, signal: options.signal }
   const mergeStats = emptyMergeStats()
 
@@ -86,7 +96,12 @@ export async function runMerge(
   const bridgeFiles = generateBridgeFiles(projects, renameMap, dedupReport, mergeStats)
 
   const allFiles = [...ruleFiles, ...aiFiles, ...bridgeFiles, ...uploadedFiles]
-  return buildFileTree(allFiles)
+  const fileTree = buildFileTree(allFiles)
+
+  // P1-4: 构建依赖图
+  const dependencyGraph = buildDependencyGraph(projects)
+
+  return { files: fileTree, mergeStats, dependencyGraph }
 }
 
 /** AST 扫描所有项目的导出符号 */

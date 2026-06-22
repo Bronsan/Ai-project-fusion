@@ -208,6 +208,8 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   │   ├── CountUp.tsx
 │   │   ├── RadarChart.tsx
 │   │   ├── FileTree.tsx
+│   │   ├── DiffViewer.tsx      # Conflict visualization (P1-2) / 冲突可视化
+│   │   ├── DependencyGraph.tsx # Dependency graph (P1-4) / 依赖图
 │   │   ├── ThemeToggle.tsx     # Theme switch / 主题切换
 │   │   └── UploadZone.tsx
 │   ├── pages/                  # Pages / 页面（模块化独立区块）
@@ -232,7 +234,8 @@ Users can also input a custom API key on the **Configure** page, which overrides
 ├── api/                        # Web-mode backend (fallback) / Web 后端（降级用）
 │   ├── lib/
 │   │   ├── aiClient.ts             # AI client (timeout/retry/stream) / AI 客户端（超时/重试/流式）
-│   │   ├── astParser.ts            # AST entity extractor / AST 实体提取器
+│   │   ├── astParser.ts            # AST entity + import extractor / AST 实体与 import 提取器
+│   │   ├── dependencyGraph.ts      # Dependency graph analysis (P1-4) / 依赖图分析
 │   │   ├── entityMerger.ts         # Intra-entity 3-way merge / 实体级三方合并
 │   │   ├── fusionService.ts        # Fusion orchestration (cancellable) / 融合编排（可取消）
 │   │   ├── mergeEngine.ts          # AST semantic fusion engine / AST 语义级融合引擎
@@ -313,6 +316,14 @@ Desktop mode exposes Go methods to the frontend via `window.go.backend.App.*`:
 ## 📋 Changelog / 版本更新历史
 
 ### v0.13beta（2026-06-21）
+
+**P1 升级：冲突可视化 + 依赖图分析 / Conflict Visualization + Dependency Graph**
+
+- **新增：冲突可视化（P1-2）** — Report 页新增"冲突详情"标签页，展示 AST 实体合并决策（自动合并/去重/重命名），支持展开查看合并后源码。
+- **新增：依赖图分析（P1-4）** — astParser 提取 import 关系，构建项目间依赖图，检测循环依赖、孤立模块、共享依赖，Report 页 SVG 可视化。
+- **新增：DiffViewer 组件** — 决策卡片 + 展开详情 + 源码复制。
+- **新增：DependencyGraph 组件** — SVG 力导向布局，循环依赖红色高亮，动态导入虚线。
+- **改进：fusionService 日志** — 融合阶段记录合并统计与依赖图分析结果。
 
 **AST 语义级融合引擎 / AST Semantic Fusion Engine**
 
