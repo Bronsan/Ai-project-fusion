@@ -30,8 +30,8 @@ export default function Settings() {
 
   useEffect(() => {
     if (isWails) {
-      window.go.main.App.GetVersion().then(setVersion)
-      window.go.main.App.GetChangelog().then(setChangelog)
+      window.go.backend.App.GetVersion().then(setVersion)
+      window.go.backend.App.GetChangelog().then(setChangelog)
     } else {
       setChangelog(`0.13beta
 - 新增：AST 语义级融合引擎（@babel/parser，替代 regex 扫描，支持函数/类/常量/接口/类型/枚举实体提取）

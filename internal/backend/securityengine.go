@@ -1,7 +1,7 @@
-// Package main - 安全审查引擎
+// Package backend - 安全审查引擎
 // 规则扫描 + AI 深度审查
 
-package main
+package backend
 
 import (
 	"encoding/json"

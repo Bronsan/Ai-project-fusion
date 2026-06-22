@@ -1,7 +1,7 @@
-// Package main - 思考流程引擎
+// Package backend - 思考流程引擎
 // AI 分析项目结构并输出融合规划
 
-package main
+package backend
 
 import (
 	"encoding/json"

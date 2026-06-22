@@ -36,7 +36,7 @@ async function request<T>(
 /** 获取项目库列表 */
 export async function fetchProjects(): Promise<Project[]> {
   if (isWails) {
-    return await window.go.main.App.GetProjects()
+    return await window.go.backend.App.GetProjects()
   }
   return request<Project[]>('/api/projects')
 }
@@ -72,13 +72,13 @@ export async function uploadProjectByPath(filePath: string): Promise<Project> {
   if (!isWails) {
     throw new Error('仅桌面模式支持')
   }
-  return await window.go.main.App.UploadProject(filePath)
+  return await window.go.backend.App.UploadProject(filePath)
 }
 
 /** 删除上传项目 */
 export async function deleteUploadedProject(id: string): Promise<void> {
   if (isWails) {
-    await window.go.main.App.DeleteUploadedProject(id)
+    await window.go.backend.App.DeleteUploadedProject(id)
     return
   }
   await fetch(`/api/projects/${id}`, { method: 'DELETE' })
@@ -87,7 +87,7 @@ export async function deleteUploadedProject(id: string): Promise<void> {
 /** 预评分 */
 export async function previewScore(projectIds: string[]): Promise<PreviewScore> {
   if (isWails) {
-    return await window.go.main.App.PreviewScoreAPI(projectIds)
+    return await window.go.backend.App.PreviewScoreAPI(projectIds)
   }
   return request<PreviewScore>('/api/score/preview', {
     method: 'POST',
@@ -104,7 +104,7 @@ export async function createFusionTask(params: {
   model?: string
 }): Promise<{ taskId: string }> {
   if (isWails) {
-    const task = await window.go.main.App.StartFusion(
+    const task = await window.go.backend.App.StartFusion(
       params.projectIds,
       params.strategy,
       params.securityLevel,
@@ -122,7 +122,7 @@ export async function createFusionTask(params: {
 /** 获取任务详情 */
 export async function fetchTask(taskId: string): Promise<FusionTask> {
   if (isWails) {
-    return await window.go.main.App.GetTask(taskId)
+    return await window.go.backend.App.GetTask(taskId)
   }
   return request<FusionTask>(`/api/fusion/${taskId}`)
 }
@@ -131,8 +131,8 @@ export async function fetchTask(taskId: string): Promise<FusionTask> {
 export async function cancelFusionTask(taskId: string): Promise<{ cancelled: boolean }> {
   if (isWails) {
     // 桌面模式：调用 Go 端取消方法（如果存在）
-    if (window.go.main.App.CancelFusion) {
-      return await window.go.main.App.CancelFusion(taskId)
+    if (window.go.backend.App.CancelFusion) {
+      return await window.go.backend.App.CancelFusion(taskId)
     }
     throw new Error('桌面模式暂不支持取消')
   }
@@ -144,7 +144,7 @@ export async function cancelFusionTask(taskId: string): Promise<{ cancelled: boo
 /** 获取任务列表 */
 export async function fetchTasks(): Promise<FusionTask[]> {
   if (isWails) {
-    return await window.go.main.App.ListTasks()
+    return await window.go.backend.App.ListTasks()
   }
   return request<FusionTask[]>('/api/fusion')
 }
@@ -152,7 +152,7 @@ export async function fetchTasks(): Promise<FusionTask[]> {
 /** 获取融合产物文件树 */
 export async function fetchArtifacts(taskId: string): Promise<{ files: FileNode[] }> {
   if (isWails) {
-    const task = await window.go.main.App.GetTask(taskId)
+    const task = await window.go.backend.App.GetTask(taskId)
     return { files: task.report?.files || [] }
   }
   return request<{ files: FileNode[] }>(`/api/fusion/${taskId}/artifacts`)

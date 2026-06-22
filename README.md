@@ -183,50 +183,53 @@ Users can also input a custom API key on the **Configure** page, which overrides
 
 ```
 .
-├── main.go                 # Wails entry / Wails 入口
-├── app.go                  # App struct & bindings / 应用绑定
-├── auth.go                 # Auth (bcrypt + token) / 认证模块
-├── db.go                   # SQLite storage / 数据库
-├── aiclient.go             # AI client / AI 客户端
-├── thinkengine.go          # Thinking process / 思考流程引擎
-├── securityengine.go       # Security review / 安全审查引擎
-├── scoreengine.go          # Scoring / 评分引擎
-├── mergeengine.go          # Code merging / 拼接引擎
-├── fusionservice.go        # Orchestration / 流程编排
-├── projects.go             # Project library / 项目库
-├── types.go                # Shared types / 共享类型
-├── wails.json              # Wails config / Wails 配置
-├── go.mod / go.sum         # Go deps / Go 依赖
-├── src/                    # Frontend / 前端
-│   ├── components/         # Reusable components / 通用组件
+├── main.go                     # Wails entry (package main) / Wails 入口
+├── wails.json                  # Wails config / Wails 配置
+├── go.mod / go.sum             # Go deps / Go 依赖
+├── package.json                # Node deps & scripts / Node 依赖与脚本
+├── internal/
+│   └── backend/                # Go desktop backend (package backend) / Go 桌面后端
+│       ├── app.go              # App struct & Wails bindings / 应用绑定
+│       ├── auth.go             # Auth (bcrypt + token) / 认证模块
+│       ├── db.go               # SQLite storage / 数据库
+│       ├── aiclient.go         # AI client / AI 客户端
+│       ├── thinkengine.go      # Thinking process / 思考流程引擎
+│       ├── securityengine.go   # Security review / 安全审查引擎
+│       ├── scoreengine.go      # Scoring / 评分引擎
+│       ├── mergeengine.go      # Code merging / 拼接引擎
+│       ├── fusionservice.go    # Orchestration / 流程编排
+│       ├── projects.go         # Project library / 项目库
+│       └── types.go            # Shared types / 共享类型
+├── src/                        # Frontend (React + TypeScript) / 前端
+│   ├── components/             # Reusable components / 通用组件
 │   │   ├── AuroraBackground.tsx
 │   │   ├── GlassCard.tsx
 │   │   ├── Navbar.tsx
 │   │   ├── CountUp.tsx
 │   │   ├── RadarChart.tsx
 │   │   ├── FileTree.tsx
-│   │   ├── ThemeToggle.tsx # Theme switch / 主题切换
+│   │   ├── ThemeToggle.tsx     # Theme switch / 主题切换
 │   │   └── UploadZone.tsx
-│   ├── pages/              # Pages / 页面（模块化独立区块）
-│   │   ├── Login.tsx       # Login/Register / 登录注册
-│   │   ├── Modules.tsx     # Module center / 模块中心
-│   │   ├── Select.tsx      # Project selection / 项目选择
-│   │   ├── Configure.tsx   # Fusion config / 融合配置
-│   │   ├── Execute.tsx     # Execution / 融合执行
-│   │   ├── Report.tsx      # Report / 融合报告
-│   │   ├── History.tsx     # History / 历史记录
-│   │   └── Settings.tsx    # Settings / 设置中心
-│   ├── lib/                # Utils / 工具
-│   │   ├── api.ts          # Dual-mode API (Wails/Web) / 双模式 API
-│   │   └── types.ts        # Frontend types / 前端类型
-│   ├── store/              # State / 状态
-│   │   ├── useAuthStore.ts # Auth state / 认证状态
+│   ├── pages/                  # Pages / 页面（模块化独立区块）
+│   │   ├── Login.tsx           # Login/Register / 登录注册
+│   │   ├── Modules.tsx         # Module center / 模块中心
+│   │   ├── Select.tsx          # Project selection / 项目选择
+│   │   ├── Configure.tsx       # Fusion config / 融合配置
+│   │   ├── Execute.tsx         # Execution / 融合执行
+│   │   ├── Report.tsx          # Report / 融合报告
+│   │   ├── History.tsx         # History / 历史记录
+│   │   └── Settings.tsx        # Settings / 设置中心
+│   ├── lib/                    # Utils / 工具
+│   │   ├── api.ts              # Dual-mode API (Wails/Web) / 双模式 API
+│   │   └── types.ts            # Frontend types / 前端类型
+│   ├── store/                  # State / 状态
+│   │   ├── useAuthStore.ts     # Auth state / 认证状态
 │   │   ├── useFusionStore.ts
-│   │   └── useThemeStore.ts # Theme state / 主题状态
-│   ├── App.tsx             # Root + router / 根组件与路由
-│   ├── main.tsx            # Entry / 入口
-│   └── index.css           # Global styles / 全局样式
-├── api/                    # Web-mode backend (fallback) / Web 后端（降级用）
+│   │   └── useThemeStore.ts    # Theme state / 主题状态
+│   ├── App.tsx                 # Root + router / 根组件与路由
+│   ├── main.tsx                # Entry / 入口
+│   └── index.css               # Global styles / 全局样式
+├── api/                        # Web-mode backend (fallback) / Web 后端（降级用）
 │   ├── lib/
 │   │   ├── aiClient.ts             # AI client (timeout/retry/stream) / AI 客户端（超时/重试/流式）
 │   │   ├── astParser.ts            # AST entity extractor / AST 实体提取器
@@ -249,27 +252,26 @@ Users can also input a custom API key on the **Configure** page, which overrides
 │   │   ├── productSecurityScanner.test.ts # Product scan tests / 产物扫描测试
 │   │   └── scoreEngine.test.ts        # Scoring unit tests / 评分单元测试
 │   └── scoring-rules.json     # Scoring rules definition / 评分规则定义文件
-├── docs/                   # Documentation / 文档
-│   ├── PRD.md              # Product requirements / 产品需求文档
+├── docs/                       # Documentation / 文档
+│   ├── PRD.md                  # Product requirements / 产品需求文档
 │   ├── TechnicalArchitecture.md # Tech architecture / 技术架构
-│   └── screenshots/        # UI screenshots (versioned) / 界面截图（按版本隔离）
-│       ├── v0.13/          # Current version screenshots / 当前版本截图
-│       └── archive/        # Previous version archive / 旧版本归档
-│           └── v0.10/      # v0.10 screenshots / 0.10 版本截图
-├── scripts/                # Setup & utility scripts / 安装与工具脚本
-│   ├── setup.sh            # Linux/macOS setup / Linux/macOS 安装
-│   ├── setup.ps1           # Windows setup / Windows 安装
-│   └── screenshot.cjs      # Screenshot generator / 截图脚本
-└── package.json
+│   └── screenshots/            # UI screenshots (versioned) / 界面截图（按版本隔离）
+│       ├── v0.13/              # Current version screenshots / 当前版本截图
+│       └── archive/            # Previous version archive / 旧版本归档
+│           └── v0.10/          # v0.10 screenshots / 0.10 版本截图
+└── scripts/                    # Setup & utility scripts / 安装与工具脚本
+    ├── setup.sh                # Linux/macOS setup / Linux/macOS 安装
+    ├── setup.ps1               # Windows setup / Windows 安装
+    └── screenshot.cjs          # Screenshot generator / 截图脚本
 ```
 
 ---
 
 ## 🔌 Wails Bindings / Wails 绑定接口
 
-Desktop mode exposes Go methods to the frontend via `window.go.main.App.*`:
+Desktop mode exposes Go methods to the frontend via `window.go.backend.App.*`:
 
-桌面模式通过 `window.go.main.App.*` 将 Go 方法暴露给前端：
+桌面模式通过 `window.go.backend.App.*` 将 Go 方法暴露给前端：
 
 | Method / 方法 | Description / 说明 |
 |---|---|

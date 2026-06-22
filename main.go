@@ -10,6 +10,8 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+
+	"projectfusion/internal/backend"
 )
 
 // embed 前端构建产物（dist 目录）
@@ -19,7 +21,7 @@ import (
 var assets embed.FS
 
 func main() {
-	app := NewApp()
+	app := backend.NewApp()
 
 	err := wails.Run(&options.App{
 		Title:     "ProjectFusion 0.13beta",
@@ -31,8 +33,8 @@ func main() {
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 10, G: 14, B: 39, A: 1},
-		OnStartup:        app.startup,
-		OnShutdown:       app.shutdown,
+		OnStartup:        app.Startup,
+		OnShutdown:       app.Shutdown,
 		Bind: []interface{}{
 			app,
 		},

@@ -1,7 +1,7 @@
-// Package main - 融合服务编排
+// Package backend - 融合服务编排
 // 串联思考→审查→评分→拼接→校验→报告
 
-package main
+package backend
 
 import (
 	"encoding/json"

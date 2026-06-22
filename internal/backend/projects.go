@@ -1,7 +1,7 @@
-// Package main - 项目库管理
+// Package backend - 项目库管理
 // 内置演示项目 + 用户上传 zip 解析
 
-package main
+package backend
 
 import (
 	"archive/zip"

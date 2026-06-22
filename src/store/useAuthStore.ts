@@ -3,13 +3,13 @@
 import { create } from 'zustand'
 
 // 检测是否在 Wails 桌面环境
-export const isWails = typeof window !== 'undefined' && !!(window as any).go?.main?.App
+export const isWails = typeof window !== 'undefined' && !!(window as any).go?.backend?.App
 
 // Wails 绑定类型声明
 declare global {
   interface Window {
     go?: {
-      main?: {
+      backend?: {
         App?: {
           RegisterUser: (username: string, password: string) => Promise<any>
           Login: (username: string, password: string, remember: boolean) => Promise<any>
@@ -68,7 +68,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       if (isWails) {
         // 桌面模式：调用 Go 绑定
-        const res = await window.go.main.App.Login(username, password, remember)
+        const res = await window.go.backend.App.Login(username, password, remember)
         if (res.success) {
           if (remember && res.token) {
             localStorage.setItem(TOKEN_KEY, res.token)
@@ -106,7 +106,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true })
     try {
       if (isWails) {
-        const res = await window.go.main.App.LoginWithToken(token)
+        const res = await window.go.backend.App.LoginWithToken(token)
         if (res.success) {
           localStorage.setItem(TOKEN_KEY, res.token || token)
           set({ isLoggedIn: true, username: res.username || username, token: res.token || token, loading: false })
@@ -132,7 +132,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true, error: null })
     try {
       if (isWails) {
-        const res = await window.go.main.App.RegisterUser(username, password)
+        const res = await window.go.backend.App.RegisterUser(username, password)
         if (res.success) {
           set({ loading: false })
           return true
@@ -158,7 +158,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { username } = get()
     if (isWails) {
       try {
-        await window.go.main.App.Logout(username)
+        await window.go.backend.App.Logout(username)
       } catch {
         // 忽略
       }
@@ -173,7 +173,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true, error: null })
     try {
       if (isWails) {
-        const res = await window.go.main.App.ChangePassword(username, oldPwd, newPwd)
+        const res = await window.go.backend.App.ChangePassword(username, oldPwd, newPwd)
         if (res.success) {
           set({ loading: false })
           return true

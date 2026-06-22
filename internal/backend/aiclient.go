@@ -1,7 +1,7 @@
-// Package main - AI 客户端模块
+// Package backend - AI 客户端模块
 // 调用大模型 API，内置演示 Key，不可达时降级本地模拟
 
-package main
+package backend
 
 import (
 	"bytes"

@@ -1,7 +1,7 @@
-// Package main - SQLite 数据库模块
+// Package backend - SQLite 数据库模块
 // 使用纯 Go 驱动 modernc.org/sqlite，无需 cgo，跨平台
 
-package main
+package backend
 
 import (
 	"database/sql"

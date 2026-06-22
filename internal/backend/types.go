@@ -1,7 +1,7 @@
-// Package main - 类型定义
+// Package backend - 类型定义
 // 与前端 src/lib/types.ts 保持一致
 
-package main
+package backend
 
 // ProjectSource 项目来源
 type ProjectSource string

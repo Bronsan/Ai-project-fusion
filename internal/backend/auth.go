@@ -1,7 +1,7 @@
-// Package main - 用户认证模块
+// Package backend - 用户认证模块
 // 密码使用 bcrypt 加密存储，记住密码通过随机 token 实现
 
-package main
+package backend
 
 import (
 	"crypto/rand"

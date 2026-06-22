@@ -1,8 +1,8 @@
-// Package main - 评分引擎
+// Package backend - 评分引擎
 // 基于真实代码内容计算项目适配性评分，五维度加权
 // 分析维度：架构兼容性、依赖冲突、许可证兼容、代码风格、文档完整度
 
-package main
+package backend
 
 import (
 	"fmt"

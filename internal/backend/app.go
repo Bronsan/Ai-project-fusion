@@ -1,7 +1,7 @@
-// Package main - App 结构体
+// Package backend - App 结构体
 // Wails 绑定核心，暴露给前端的方法
 
-package main
+package backend
 
 import (
 	"context"
@@ -21,8 +21,8 @@ func NewApp() *App {
 	return &App{}
 }
 
-// startup 应用启动时调用
-func (a *App) startup(ctx context.Context) {
+// Startup 应用启动时调用
+func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
 	// 初始化数据库
 	db, err := NewDB()
@@ -33,8 +33,8 @@ func (a *App) startup(ctx context.Context) {
 	a.db = db
 }
 
-// shutdown 应用关闭时调用
-func (a *App) shutdown(ctx context.Context) {
+// Shutdown 应用关闭时调用
+func (a *App) Shutdown(ctx context.Context) {
 	if a.db != nil {
 		a.db.Close()
 	}

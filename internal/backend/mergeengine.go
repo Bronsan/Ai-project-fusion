@@ -1,8 +1,8 @@
-// Package main - 代码拼接引擎
+// Package backend - 代码拼接引擎
 // 基于真实代码分析生成融合项目文件树
 // 分析每个项目的导出符号，生成统一入口与共享层
 
-package main
+package backend
 
 import (
 	"encoding/json"
