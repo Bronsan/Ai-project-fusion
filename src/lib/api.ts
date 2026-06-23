@@ -176,6 +176,85 @@ export async function testApiKey(apiKey: string, model?: string): Promise<{
   })
 }
 
+/** AI 提供商配置（前端展示用，apiKey 已脱敏） */
+export interface AIProviderConfig {
+  id: string
+  name: string
+  baseUrl: string
+  apiKey: string
+  hasApiKey: boolean
+  model: string
+  isDefault?: boolean
+  enabled: boolean
+}
+
+/** AI 配置文件结构 */
+export interface AIConfig {
+  defaultId: string
+  providers: AIProviderConfig[]
+}
+
+/** 获取 AI 配置 */
+export async function fetchAIConfig(): Promise<AIConfig> {
+  if (isWails) {
+    // 桌面模式：返回内置默认配置
+    return {
+      defaultId: 'builtin',
+      providers: [
+        {
+          id: 'builtin',
+          name: '内置演示 AI',
+          baseUrl: 'https://api.openai.com/v1',
+          apiKey: '',
+          hasApiKey: false,
+          model: 'gpt-4o-mini',
+          isDefault: true,
+          enabled: true,
+        },
+      ],
+    }
+  }
+  return request<AIConfig>('/api/ai-config')
+}
+
+/** 保存 AI 配置 */
+export async function saveAIConfig(config: {
+  defaultId: string
+  providers: Array<Omit<AIProviderConfig, 'hasApiKey'>>
+}): Promise<{ defaultId: string; count: number }> {
+  if (isWails) {
+    // 桌面模式：暂不支持持久化，仅返回成功
+    return { defaultId: config.defaultId, count: config.providers.length }
+  }
+  return request('/api/ai-config', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  })
+}
+
+/** 获取 AI 配置文件路径 */
+export async function fetchAIConfigPath(): Promise<{ path: string; exists: boolean }> {
+  if (isWails) {
+    return { path: 'api/ai-config.json', exists: true }
+  }
+  return request<{ path: string; exists: boolean }>('/api/ai-config/path')
+}
+
+/** 测试单个 AI 提供商连通性 */
+export async function testAIProvider(params: {
+  apiKey: string
+  model: string
+  baseUrl?: string
+}): Promise<{ ok: boolean; message: string; model?: string; baseUrl?: string }> {
+  if (isWails) {
+    return { ok: true, message: '已启用内置 AI（演示模式）', baseUrl: params.baseUrl }
+  }
+  return request('/api/ai-config/test', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  })
+}
+
 /** 下载整包 URL（仅 Web 模式） */
 export function getDownloadUrl(taskId: string): string {
   return `/api/fusion/${taskId}/download`

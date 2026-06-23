@@ -13,6 +13,7 @@ import projectRoutes from './routes/projects.js'
 import scoreRoutes from './routes/score.js'
 import fusionRoutes from './routes/fusion.js'
 import aiRoutes from './routes/ai.js'
+import aiConfigRoutes from './routes/aiConfig.js'
 
 // 加载环境变量
 dotenv.config()
@@ -30,6 +31,7 @@ app.use('/api/projects', projectRoutes)
 app.use('/api/score', scoreRoutes)
 app.use('/api/fusion', fusionRoutes)
 app.use('/api/ai', aiRoutes)
+app.use('/api/ai-config', aiConfigRoutes)
 
 /**
  * 健康检查

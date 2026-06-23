@@ -12,6 +12,7 @@ import Execute from '@/pages/Execute'
 import Report from '@/pages/Report'
 import History from '@/pages/History'
 import Settings from '@/pages/Settings'
+import AIConfig from '@/pages/AIConfig'
 
 /** 登录守卫 - 未登录重定向到登录页 */
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -55,6 +56,7 @@ export default function App() {
         <Route path="/report/:taskId" element={<RequireAuth><Report /></RequireAuth>} />
         <Route path="/history" element={<RequireAuth><History /></RequireAuth>} />
         <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
+        <Route path="/ai-config" element={<RequireAuth><AIConfig /></RequireAuth>} />
 
         {/* 默认跳转 */}
         <Route path="/" element={<Navigate to={isLoggedIn ? '/modules' : '/login'} replace />} />

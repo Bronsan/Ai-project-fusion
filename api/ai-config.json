@@ -1,0 +1,17 @@
+{
+  "$schema": "ai-config.v1",
+  "version": "0.13",
+  "description": "ProjectFusion 大模型配置 - 可在此文件直接编辑，也可通过 AI 配置管理界面修改",
+  "defaultId": "builtin",
+  "providers": [
+    {
+      "id": "builtin",
+      "name": "内置演示 AI",
+      "baseUrl": "https://api.openai.com/v1",
+      "apiKey": "",
+      "model": "gpt-4o-mini",
+      "isDefault": true,
+      "enabled": true
+    }
+  ]
+}

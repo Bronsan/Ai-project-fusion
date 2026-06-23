@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import {
   ArrowLeft, Settings as SettingsIcon, Key, Shield, Lock, Loader2,
-  CheckCircle2, Sparkles, Info, Sun, Moon,
+  Sparkles, Info, Sun, Moon, ChevronRight,
 } from 'lucide-react'
 import { useAuthStore, isWails } from '@/store/useAuthStore'
-import { testApiKey } from '@/lib/api'
 import AuroraBackground from '@/components/AuroraBackground'
 import GlassCard from '@/components/GlassCard'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -18,10 +16,6 @@ export default function Settings() {
   const navigate = useNavigate()
   const { username, changePassword, loading, error } = useAuthStore()
   const { mode, setMode } = useThemeStore()
-  const [apiKey, setApiKey] = useState('')
-  const [model, setModel] = useState('gpt-4o-mini')
-  const [testing, setTesting] = useState(false)
-  const [testResult, setTestResult] = useState('')
   const [version, setVersion] = useState('0.13')
   const [changelog, setChangelog] = useState('')
   const [oldPwd, setOldPwd] = useState('')
@@ -74,18 +68,6 @@ export default function Settings() {
 - 初始版本：AI 驱动的开源项目智能融合工坊`)
     }
   }, [])
-
-  const handleTestKey = async () => {
-    setTesting(true)
-    setTestResult('')
-    try {
-      const res = await testApiKey(apiKey, model)
-      setTestResult(res.message)
-    } catch (err: any) {
-      setTestResult(err?.message || '测试失败')
-    }
-    setTesting(false)
-  }
 
   const handleChangePwd = async () => {
     setPwdMsg('')
@@ -158,46 +140,37 @@ export default function Settings() {
             </div>
           </GlassCard>
 
-          {/* AI 配置 */}
+          {/* AI 配置 - 按钮入口 */}
           <GlassCard className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Key size={18} className="text-aurora-purple" />
               <h2 className="text-base font-semibold">AI 引擎配置</h2>
             </div>
             <p className="text-xs text-dim mb-4">
-              内置演示 AI 已就绪。如需更强能力，可填入自有 OpenAI 兼容 API Key。
+              内置演示 AI 已就绪。如需添加多个大模型配置或编辑 JSON 文件，请进入配置管理界面。
             </p>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-dim mb-1.5 block">API Key</label>
-                <input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="input"
-                  placeholder="sk-...（留空使用内置演示）"
-                />
+            <button
+              onClick={() => navigate('/ai-config')}
+              className="w-full p-4 rounded-xl flex items-center justify-between transition-all group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(124, 92, 255, 0.15), rgba(92, 225, 230, 0.15))',
+                border: '1px solid var(--color-glass-border)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, var(--color-aurora-purple), var(--color-aurora-cyan))' }}
+                >
+                  <Sparkles size={18} className="text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-semibold">进入 AI 配置管理</p>
+                  <p className="text-[10px] text-dim">添加模型 · 编辑 JSON · 测试连通性</p>
+                </div>
               </div>
-              <div>
-                <label className="text-xs text-dim mb-1.5 block">模型</label>
-                <input
-                  type="text"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  className="input"
-                  placeholder="gpt-4o-mini"
-                />
-              </div>
-              <button className="btn-primary" onClick={handleTestKey} disabled={testing}>
-                {testing ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                测试连接
-              </button>
-              {testResult && (
-                <p className="text-xs text-aurora-cyan flex items-center gap-1.5">
-                  <CheckCircle2 size={12} /> {testResult}
-                </p>
-              )}
-            </div>
+              <ChevronRight size={18} className="text-dim group-hover:translate-x-1 transition-transform" />
+            </button>
           </GlassCard>
 
           {/* 修改密码 */}
