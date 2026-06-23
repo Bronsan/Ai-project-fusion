@@ -169,4 +169,6 @@ export interface CreateFusionRequest {
   securityLevel: number;
   apiKey?: string;
   model?: string;
+  /** 自定义 API 端点（OpenAI 兼容协议），用于自定义服务商 */
+  baseUrl?: string;
 }

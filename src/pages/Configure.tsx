@@ -28,12 +28,16 @@ export default function Configure() {
     securityLevel, setSecurityLevel,
     apiKey, setApiKey,
     model, setModel,
+    baseUrl, setBaseUrl,
+    customModel, setCustomModel,
     keyTesting, keyTestResult, testKey,
     startFusion,
   } = useFusionStore()
 
   const selectedProjects = projects.filter((p) => selectedIds.includes(p.id))
   const canStart = selectedIds.length >= 2
+  // 是否为自定义模式（model === 'custom'）
+  const isCustomMode = model === 'custom'
 
   // 启动融合
   const handleStart = async () => {
@@ -186,13 +190,54 @@ export default function Configure() {
                 className="input-glass mb-4"
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                style={{ appearance: 'none' }}
               >
                 <option value="gpt-4o-mini">gpt-4o-mini（推荐，快速）</option>
                 <option value="gpt-4o">gpt-4o（更强，较慢）</option>
                 <option value="gpt-4-turbo">gpt-4-turbo</option>
                 <option value="gpt-3.5-turbo">gpt-3.5-turbo（经济）</option>
+                <option value="custom">自定义（自填服务商与端点）</option>
               </select>
+
+              {/* 自定义模式：填写服务商端点与模型名 */}
+              {isCustomMode && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mb-4 space-y-3 overflow-hidden"
+                >
+                  <div
+                    className="flex items-center gap-2 p-3 rounded-xl text-xs"
+                    style={{
+                      background: 'rgba(124, 92, 255, 0.08)',
+                      border: '1px solid rgba(124, 92, 255, 0.2)',
+                      color: 'var(--color-aurora-purple)',
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    自定义模式：自行填写 OpenAI 兼容服务商的 API 端点与模型名
+                  </div>
+                  <div>
+                    <label className="block text-xs text-dim mb-2">API 端点（Base URL）</label>
+                    <input
+                      type="text"
+                      className="input-glass"
+                      placeholder="https://api.openai.com/v1"
+                      value={baseUrl}
+                      onChange={(e) => setBaseUrl(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-dim mb-2">模型名</label>
+                    <input
+                      type="text"
+                      className="input-glass"
+                      placeholder="gpt-4o-mini"
+                      value={customModel}
+                      onChange={(e) => setCustomModel(e.target.value)}
+                    />
+                  </div>
+                </motion.div>
+              )}
 
               {/* 测试按钮 */}
               <button

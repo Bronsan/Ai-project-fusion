@@ -22,7 +22,7 @@ export interface MergePlan {
 export async function runThinkingProcess(
   projects: Project[],
   strategy: FusionStrategy,
-  options: { apiKey?: string; model?: string } = {}
+  options: { apiKey?: string; model?: string; baseUrl?: string } = {}
 ): Promise<ThinkingResult> {
   const projectInfo = projects.map((p) => ({
     name: p.name,
@@ -63,7 +63,7 @@ export async function runThinkingProcess(
         { role: 'system', content: '你是资深项目架构师，擅长分析开源项目结构并制定融合方案。' },
         { role: 'user', content: prompt },
       ],
-      { apiKey: options.apiKey, model: options.model, temperature: 0.5, maxTokens: 1200 }
+      { apiKey: options.apiKey, model: options.model, baseUrl: options.baseUrl, temperature: 0.5, maxTokens: 1200 }
     )
 
     const parsed = JSON.parse(extractJson(content)) as ThinkingResult
@@ -81,7 +81,7 @@ export async function runThinkingProcess(
 /** 二次校验思考流程 - 融合后对产物进行检查 */
 export async function runVerificationThinking(
   fusedFiles: { path: string; content: string }[],
-  options: { apiKey?: string; model?: string }
+  options: { apiKey?: string; model?: string; baseUrl?: string }
 ): Promise<{ passed: boolean; notes: string[] }> {
   const fileList = fusedFiles.map((f) => f.path).join(', ')
   const prompt = `请校验以下融合后的项目文件结构是否合理，返回 JSON。
@@ -95,7 +95,7 @@ export async function runVerificationThinking(
         { role: 'system', content: '你是代码审查专家，负责校验融合项目的完整性。' },
         { role: 'user', content: prompt },
       ],
-      { apiKey: options.apiKey, model: options.model, temperature: 0.3, maxTokens: 500 }
+      { apiKey: options.apiKey, model: options.model, baseUrl: options.baseUrl, temperature: 0.3, maxTokens: 500 }
     )
     const parsed = JSON.parse(extractJson(content)) as { passed: boolean; notes: string[] }
     return { passed: parsed.passed ?? true, notes: parsed.notes ?? [] }

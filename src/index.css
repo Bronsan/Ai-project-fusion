@@ -335,6 +335,30 @@ html, body, #root {
   color: var(--color-text-dim);
 }
 
+/* select 下拉框夜间模式适配 */
+select.input,
+select.input-glass {
+  /* 下拉箭头使用当前文字色，适配深浅模式 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B92B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+/* option 选项 - 深色背景下使用深色背景 */
+select.input option,
+select.input-glass option {
+  background: #131838;
+  color: #E8ECFF;
+}
+
+/* 浅色模式下 option 恢复默认 */
+:root.light select.input option,
+:root.light select.input-glass option {
+  background: #FFFFFF;
+  color: #1A1F36;
+}
+
 /* ===== 标签 ===== */
 .tag {
   display: inline-flex;

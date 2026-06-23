@@ -62,6 +62,7 @@ router.post('/', async (req, res) => {
     projects: selected,
     apiKey: body.apiKey,
     model: body.model,
+    baseUrl: body.baseUrl,
   }).catch((err) => {
     task.status = 'failed'
     task.currentStep = '执行异常'

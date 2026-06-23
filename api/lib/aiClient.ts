@@ -29,6 +29,8 @@ export interface AIChatMessage {
 export interface AIChatOptions {
   apiKey?: string
   model?: string
+  /** 自定义 API 端点，覆盖默认 baseUrl */
+  baseUrl?: string
   temperature?: number
   maxTokens?: number
   /** 超时毫秒，默认 30s */
@@ -52,7 +54,7 @@ export async function chat(
 ): Promise<string> {
   const apiKey = options.apiKey || BUILTIN_API_KEY
   const model = options.model || BUILTIN_MODEL
-  const baseUrl = DEFAULT_BASE_URL
+  const baseUrl = options.baseUrl || DEFAULT_BASE_URL
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
 
   // 重试循环：最多 MAX_RETRIES + 1 次

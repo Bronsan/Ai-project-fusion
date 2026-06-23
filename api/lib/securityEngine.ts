@@ -10,7 +10,7 @@ import { chat } from './aiClient.js'
 export async function runSecurityReview(
   projects: Project[],
   securityLevel: number,
-  options: { apiKey?: string; model?: string } = {}
+  options: { apiKey?: string; model?: string; baseUrl?: string } = {}
 ): Promise<{ issues: SecurityIssue[]; passed: boolean }> {
   // 1. 规则扫描：基于项目元数据快速识别常见问题
   const ruleIssues = scanByRules(projects)
@@ -76,7 +76,7 @@ function scanByRules(projects: Project[]): SecurityIssue[] {
 async function aiSecurityScan(
   projects: Project[],
   securityLevel: number,
-  options: { apiKey?: string; model?: string }
+  options: { apiKey?: string; model?: string; baseUrl?: string }
 ): Promise<SecurityIssue[]> {
   const projectInfo = projects.map((p) => ({
     name: p.name,
@@ -98,7 +98,7 @@ async function aiSecurityScan(
         { role: 'system', content: '你是代码安全审查专家，擅长识别依赖漏洞、许可证冲突与代码注入风险。' },
         { role: 'user', content: prompt },
       ],
-      { apiKey: options.apiKey, model: options.model, temperature: 0.3, maxTokens: 800 }
+      { apiKey: options.apiKey, model: options.model, baseUrl: options.baseUrl, temperature: 0.3, maxTokens: 800 }
     )
 
     const parsed = JSON.parse(extractJson(content)) as { issues: SecurityIssue[] }

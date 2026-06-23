@@ -82,7 +82,7 @@ export function calculatePreviewScore(projects: Project[]): PreviewScore {
 export async function aiDeepScore(
   projects: Project[],
   strategy: string,
-  options: { apiKey?: string; model?: string }
+  options: { apiKey?: string; model?: string; baseUrl?: string }
 ): Promise<ScoreDimension[]> {
   const analyses = projects.map(analyzeCode)
 
@@ -146,7 +146,7 @@ ${strategy}
         { role: 'system', content: '你是项目评估专家，必须基于真实代码数据按规则评分，严禁返回固定分数。' },
         { role: 'user', content: prompt },
       ],
-      { apiKey: options.apiKey, model: options.model, temperature: 0.2, maxTokens: 800 }
+      { apiKey: options.apiKey, model: options.model, baseUrl: options.baseUrl, temperature: 0.2, maxTokens: 800 }
     )
     const parsed = JSON.parse(extractJson(content)) as { dimensions: ScoreDimension[] }
     if (parsed.dimensions && parsed.dimensions.length === 5) {

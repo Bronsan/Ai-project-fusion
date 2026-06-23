@@ -22,6 +22,8 @@ interface FusionContext {
   projects: Project[]
   apiKey?: string
   model?: string
+  /** 自定义 API 端点 */
+  baseUrl?: string
   /** 取消信号 */
   signal?: AbortSignal
 }
@@ -97,6 +99,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     const thinking = await runThinkingProcess(projects, task.strategy, {
       apiKey: ctx.apiKey,
       model: ctx.model,
+      baseUrl: ctx.baseUrl,
     })
     throwIfCancelled(effectiveSignal)
     for (const step of thinking.steps) {
@@ -114,6 +117,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     const review = await runSecurityReview(projects, task.securityLevel, {
       apiKey: ctx.apiKey,
       model: ctx.model,
+      baseUrl: ctx.baseUrl,
     })
     throwIfCancelled(effectiveSignal)
     for (const issue of review.issues) {
@@ -129,7 +133,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     updateStatus(task, 'scoring', '适配性评分：AI 分析代码并按规则打分')
     await delay(500, effectiveSignal)
 
-    const dimensions = await aiDeepScore(projects, task.strategy, ctx)
+    const dimensions = await aiDeepScore(projects, task.strategy, { apiKey: ctx.apiKey, model: ctx.model, baseUrl: ctx.baseUrl })
     throwIfCancelled(effectiveSignal)
     const totalScore = Math.round(
       dimensions.reduce((sum, d) => {
@@ -159,6 +163,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     const mergeResult = await runMerge(projects, thinking.mergePlan, task.strategy, {
       apiKey: ctx.apiKey,
       model: ctx.model,
+      baseUrl: ctx.baseUrl,
       signal: effectiveSignal,
     })
     throwIfCancelled(effectiveSignal)
@@ -205,6 +210,7 @@ export async function executeFusion(ctx: FusionContext): Promise<void> {
     const verify = await runVerificationThinking(flatFiles, {
       apiKey: ctx.apiKey,
       model: ctx.model,
+      baseUrl: ctx.baseUrl,
     })
     throwIfCancelled(effectiveSignal)
     for (const note of verify.notes) {

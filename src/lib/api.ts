@@ -102,6 +102,7 @@ export async function createFusionTask(params: {
   securityLevel: number
   apiKey?: string
   model?: string
+  baseUrl?: string
 }): Promise<{ taskId: string }> {
   if (isWails) {
     const task = await window.go.backend.App.StartFusion(

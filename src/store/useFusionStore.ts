@@ -34,10 +34,14 @@ interface FusionState {
   securityLevel: number
   apiKey: string
   model: string
+  baseUrl: string
+  customModel: string
   setStrategy: (s: FusionStrategy) => void
   setSecurityLevel: (n: number) => void
   setApiKey: (k: string) => void
   setModel: (m: string) => void
+  setBaseUrl: (u: string) => void
+  setCustomModel: (m: string) => void
 
   // 任务
   tasks: FusionTask[]
@@ -133,10 +137,14 @@ export const useFusionStore = create<FusionState>((set, get) => ({
   securityLevel: 3,
   apiKey: '',
   model: 'gpt-4o-mini',
+  baseUrl: '',
+  customModel: 'gpt-4o-mini',
   setStrategy: (s) => set({ strategy: s }),
   setSecurityLevel: (n) => set({ securityLevel: n }),
   setApiKey: (k) => set({ apiKey: k }),
   setModel: (m) => set({ model: m }),
+  setBaseUrl: (u) => set({ baseUrl: u }),
+  setCustomModel: (m) => set({ customModel: m }),
 
   // ===== 任务 =====
   tasks: [],
@@ -154,15 +162,19 @@ export const useFusionStore = create<FusionState>((set, get) => ({
     set({ currentTaskId: id, currentTask: null })
   },
   startFusion: async () => {
-    const { selectedIds, strategy, securityLevel, apiKey, model } = get()
+    const { selectedIds, strategy, securityLevel, apiKey, model, baseUrl, customModel } = get()
     if (selectedIds.length < 2) return null
+    // 自定义模式：model === 'custom' 时使用 customModel 作为实际模型名
+    const isCustom = model === 'custom'
+    const actualModel = isCustom ? customModel : model
     try {
       const { taskId } = await api.createFusionTask({
         projectIds: selectedIds,
         strategy,
         securityLevel,
         apiKey: apiKey || undefined,
-        model,
+        model: actualModel,
+        baseUrl: isCustom ? (baseUrl || undefined) : undefined,
       })
       set({ currentTaskId: taskId })
       return taskId

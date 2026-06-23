@@ -29,6 +29,7 @@ import type { DependencyGraphInfo } from '../types.js'
 export interface MergeContext {
   apiKey?: string
   model?: string
+  baseUrl?: string
   signal?: AbortSignal
 }
 
@@ -73,9 +74,9 @@ export async function runMerge(
   projects: Project[],
   plan: MergePlan,
   strategy: FusionStrategy,
-  options: { apiKey?: string; model?: string; signal?: AbortSignal } = {}
+  options: { apiKey?: string; model?: string; baseUrl?: string; signal?: AbortSignal } = {}
 ): Promise<MergeResult> {
-  const ctx: MergeContext = { apiKey: options.apiKey, model: options.model, signal: options.signal }
+  const ctx: MergeContext = { apiKey: options.apiKey, model: options.model, baseUrl: options.baseUrl, signal: options.signal }
   const mergeStats = emptyMergeStats()
 
   // 1. AST 扫描所有项目的代码实体
